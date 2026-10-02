@@ -46,5 +46,6 @@ http.createServer(async (req, res) => {
   process.exit(0);
 }).listen(PORT, () => {
   console.log('Opening Google consent in your browser…');
-  exec(`start "" "${authUrl}"`);
+  console.log(authUrl);
+  if (!process.env.NO_OPEN) exec(`start "" "${authUrl}"`);
 });

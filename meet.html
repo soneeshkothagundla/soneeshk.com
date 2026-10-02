@@ -118,18 +118,25 @@ try { $('name').value = localStorage.getItem('meet-name') || ''; } catch {}
 const ready = () => { $('joinBtn').disabled = !$('name').value.trim(); };
 $('name').oninput = ready; ready();
 $('name').onkeydown = (e) => { if (e.key === 'Enter' && !$('joinBtn').disabled) $('joinBtn').click(); };
-try {
-  stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }, audio: { echoCancellation: true, noiseSuppression: true } });
-} catch {
-  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { stream = new MediaStream(); }
-  $('pvoff').hidden = false; $('lobbyNote').textContent = 'Camera or mic blocked — you can still join';
-}
-$('pv').srcObject = stream;
-camTrack = stream.getVideoTracks()[0];
+// Ask for camera/mic in the background so Join always responds.
+const media = (async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }, audio: { echoCancellation: true, noiseSuppression: true } });
+  } catch {
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { stream = new MediaStream(); }
+    $('pvoff').hidden = false; $('lobbyNote').textContent = 'Camera or mic blocked — you can still join';
+  }
+  $('pv').srcObject = stream;
+  camTrack = stream.getVideoTracks()[0];
+})();
 
 $('joinBtn').onclick = async () => {
   const name = $('name').value.trim().slice(0, 60);
   try { localStorage.setItem('meet-name', name); } catch {}
+  $('joinBtn').disabled = true; $('joinBtn').textContent = 'Allow camera & mic to join…';
+  // Don't wait forever on an unanswered permission prompt.
+  await Promise.race([media, new Promise((r) => setTimeout(r, 15000))]);
+  if (!stream) stream = new MediaStream();
   $('lobby').remove(); $('call').classList.add('on'); $('self').srcObject = stream;
   join(name);
 };

@@ -54,7 +54,9 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 .head{all:unset;align-self:center;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;margin-bottom:22px;
   -webkit-tap-highlight-color:transparent;border-radius:14px;padding:4px 10px}
 .head:focus-visible{outline:2px solid var(--out);outline-offset:2px}
-.head img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--in)}
+.av{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:21px;font-weight:500;letter-spacing:.02em;color:#fff;
+  background:linear-gradient(180deg,#a5abb8,#858a96)}
+.av.big{width:96px;height:96px;font-size:36px;margin:0 auto}
 .head span{font-size:13px;color:var(--fg);display:flex;align-items:center;gap:2px}
 .head svg{width:12px;height:12px;color:var(--muted)}
 
@@ -84,11 +86,10 @@ dialog{margin:auto;border:0;padding:28px 22px 22px;border-radius:22px;width:min(
   text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}
 dialog::backdrop{background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 dialog[open]{animation:up .3s cubic-bezier(.2,.9,.3,1)}
-dialog img{width:96px;height:96px;border-radius:50%;object-fit:cover}
 dialog h2{font-weight:500;font-size:22px;margin-top:12px}
 dialog .say{font-size:14px}
 dialog p{font-size:14px;color:var(--muted);margin-top:8px}
-.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}
+.acts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:20px}
 .acts a,.acts button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-radius:14px;
   background:var(--in);font-size:11px;color:var(--fg);transition:filter .15s}
 .acts a:hover,.acts button:hover{filter:brightness(.95)}
@@ -165,7 +166,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
 </button>
 <main id="chat" aria-live="polite">
   <button class="head" id="head" type="button" aria-label="Open contact card">
-    <img src="/img/avatar.jpg" alt="" width="56" height="56">
+    <span class="av" aria-hidden="true">SK</span>
     <span>Soneesh<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
   </button>
   <div class="b in" data-id="hi">Hi <span class="wave">👋</span> I'm Soneesh <span class="say">(so niche)</span></div>
@@ -190,13 +191,14 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
 </main>
 <dialog id="card" aria-label="Contact card">
   <button class="x" type="button" aria-label="Close" data-close>&times;</button>
-  <img src="/img/avatar.jpg" alt="Soneesh Kothagundla" width="96" height="96">
+  <span class="av big" aria-hidden="true">SK</span>
   <h2>Soneesh Kothagundla</h2>
   <div class="say">(so niche)</div>
   <p>In the relentless pursuit of saving lives.</p>
   <div class="acts">
     <button type="button" id="cardText"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.6 1.4 4.9 3.6 6.5-.2 1.4-.9 2.7-1.9 3.6 2.1 0 4-.8 5.3-1.9 1 .2 2 .3 3 .3 5.5 0 10-3.8 10-8.5S17.5 3 12 3z"/></svg>text</button>
     <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.79-1.7-2.79-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>linkedin</a>
+    <a href="https://x.com/soneeshkk" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78zm-1.08 16.2h1.7L7.4 4.73H5.58z"/></svg>x</a>
     <a href="https://www.instagram.com/soneeshk/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>instagram</a>
     <a href="https://www.youtube.com/@SoneeshKothagundla04" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 00-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 001 7.2 31 31 0 00.5 12 31 31 0 001 16.8a3 3 0 002.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 002.1-2.1 31 31 0 00.5-4.8 31 31 0 00-.5-4.8zM9.8 15.1V8.9l5.8 3.1z"/></svg>youtube</a>
   </div>

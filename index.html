@@ -19,12 +19,14 @@
 *{margin:0;box-sizing:border-box}
 html,body{min-height:100%}
 body{background:var(--bg);color:var(--fg);font:400 clamp(17px,2vw,19px)/1.4 Figtree,"Google Sans",system-ui,sans-serif;
-  letter-spacing:-.005em;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:72px 16px;
+  letter-spacing:-.005em;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:flex-start;
+  padding:max(96px,24vh) max(16px,env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
   transition:background .4s,color .4s;-webkit-font-smoothing:antialiased}
 main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 
 .b{max-width:85%;padding:9px 14px;border-radius:20px;word-wrap:break-word;width:fit-content;
   opacity:0;transform:translateY(8px) scale(.96);transform-origin:bottom left;transition:opacity .35s,transform .45s cubic-bezier(.2,.9,.3,1.2)}
+.b.in:not(.show){display:none}
 .b.on{opacity:1;transform:none}
 .in{background:var(--in);color:var(--fg);align-self:flex-start;border-bottom-left-radius:6px}
 .in+.in{border-top-left-radius:6px}
@@ -49,8 +51,8 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 .meta button{all:unset;cursor:pointer;text-decoration:underline}
 
 #reply{align-self:flex-start;margin-top:18px;font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;
-  padding:6px 2px;opacity:0;transition:opacity .4s}
-#reply.on{opacity:1}
+  padding:10px 2px;min-height:44px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+#reply.on{opacity:1;visibility:visible}
 #reply:hover{text-decoration:underline;text-underline-offset:3px}
 
 form{margin-top:16px;display:none;flex-direction:column;gap:8px}
@@ -62,21 +64,31 @@ textarea{padding:6px 0;max-height:160px;line-height:1.35}
 input{background:var(--field);border:1px solid var(--edge);border-radius:22px;padding:9px 14px}
 textarea::placeholder,input::placeholder{color:var(--muted)}
 .bar:focus-within,input:focus{border-color:color-mix(in srgb,var(--out) 60%,var(--edge))}
-.send{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:var(--out);color:#fff;cursor:pointer;display:grid;place-items:center;transition:opacity .2s,transform .15s}
+.send{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:var(--out);color:#fff;cursor:pointer;display:grid;place-items:center;transition:opacity .2s,transform .15s}
 .send:disabled{opacity:.35;cursor:default}
 .send:not(:disabled):active{transform:scale(.92)}
 .send svg{width:16px;height:16px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 
-#t{position:fixed;top:20px;right:20px;width:36px;height:36px;border:0;border-radius:50%;background:none;color:var(--muted);
+#t{position:fixed;top:max(16px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));width:44px;height:44px;border:0;border-radius:50%;background:none;color:var(--muted);
   cursor:pointer;display:grid;place-items:center;transition:color .2s}
 #t:hover{color:var(--fg)}
 #t svg{width:18px;height:18px}
 .moon{display:none}
 :root[data-theme=dark] .sun{display:none}:root[data-theme=dark] .moon{display:block}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .sun{display:none}:root:not([data-theme=light]) .moon{display:block}}
+@media (max-width:520px){
+  body{font-size:17px;padding-top:max(88px,14vh)}
+  main{max-width:none}
+  .b{max-width:82%;padding:8px 13px;border-radius:19px}
+  /* Composer pins to the bottom like a messaging app */
+  form.on{position:sticky;bottom:0;margin:12px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  body{padding-bottom:0}
+}
 @media (prefers-reduced-motion:reduce){.b,#reply{transition:none}.on .wave,.typing i{animation:none}}
 </style>
+<noscript><style>.b.in{display:block!important;opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
 <button id="t" aria-label="Toggle light and dark mode">
@@ -117,17 +129,19 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
       still=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Play the incoming bubbles like a conversation: typing dots, then the message.
-  function typing(){var t=document.createElement('div');t.className='b in typing on';t.innerHTML='<i></i><i></i><i></i>';return t}
+  function reveal(b){b.classList.add('show');requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
+  function typing(){var t=document.createElement('div');t.className='b in typing show on';t.innerHTML='<i></i><i></i><i></i>';return t}
   function play(i){
     if(i>=bubbles.length){reply.classList.add('on');return}
     var b=bubbles[i];
-    if(still||i===0){b.classList.add('on');return setTimeout(function(){play(i+1)},still?0:350)}
+    if(still||i===0){reveal(b);return setTimeout(function(){play(i+1)},still?0:350)}
     var t=typing();chat.insertBefore(t,b);
-    setTimeout(function(){t.remove();b.classList.add('on');setTimeout(function(){play(i+1)},250)},500+Math.min(b.textContent.length*12,700));
+    setTimeout(function(){t.remove();reveal(b);setTimeout(function(){play(i+1)},250)},500+Math.min(b.textContent.length*12,700));
   }
   setTimeout(function(){play(0)},still?0:300);
 
-  reply.onclick=function(){reply.style.display='none';form.classList.add('on');(email.value?msg:email).focus()};
+  reply.onclick=function(){reply.style.display='none';form.classList.add('on');(email.value?msg:email).focus({preventScroll:true});
+    form.scrollIntoView({block:'end',behavior:still?'auto':'smooth'})};
 
   function grow(){msg.style.height='auto';msg.style.height=msg.scrollHeight+'px'}
   function valid(){return msg.value.trim().length>0&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())}
@@ -156,6 +170,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     requestAnimationFrame(function(){b.classList.add('on')});
     msg.value='';grow();send.disabled=true;email.readOnly=true;
     deliver(text,meta);
+    form.scrollIntoView({block:'end',behavior:still?'auto':'smooth'});
   };
 })();
 </script>

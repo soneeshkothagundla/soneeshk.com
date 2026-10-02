@@ -137,7 +137,8 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   fetch('/api/sleep').then(function(r){return r.ok?r.json():null}).then(function(d){
     if(!d||!(d.minutes>0))return;
     var h=Math.floor(d.minutes/60),m=Math.round(d.minutes%60);
-    sleepEl.textContent='The amount of sleep I got today: '+(h?h+'h ':'')+m+'m';
+    sleepEl.textContent='The amount of sleep I got today: ';
+    var n=document.createElement('span');n.style.whiteSpace='nowrap';n.textContent=(h?h+'h ':'')+m+'m';sleepEl.appendChild(n);
     sleepEl.hidden=false;
     var last=chat.querySelector('.b.in.last');if(last)last.classList.remove('last');sleepEl.classList.add('last');
     if(sleepEl.dataset.missed){reveal(sleepEl)}

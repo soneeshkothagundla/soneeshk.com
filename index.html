@@ -100,6 +100,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="b in">I'm Soneesh <span class="say">(so niche)</span></div>
   <div class="b in">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>.</div>
   <div class="b in last">I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
+  <div class="b in" id="sleep" hidden></div>
   <div id="log" style="display:contents"></div>
   <button id="reply" type="button">Reply</button>
   <form id="f" novalidate>
@@ -129,11 +130,22 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
       still=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Play the incoming bubbles like a conversation: typing dots, then the message.
+  // Sleep bubble: filled from /api/sleep (Fitbit via Google Health API); stays hidden if unavailable.
+  var sleepEl=document.getElementById('sleep');
+  fetch('/api/sleep').then(function(r){return r.ok?r.json():null}).then(function(d){
+    if(!d||!(d.minutes>0))return;
+    var h=Math.floor(d.minutes/60),m=Math.round(d.minutes%60);
+    sleepEl.textContent='The amount of sleep I got today: '+(h?h+'h ':'')+m+'m';
+    sleepEl.hidden=false;
+    var last=chat.querySelector('.b.in.last');if(last)last.classList.remove('last');sleepEl.classList.add('last');
+    if(sleepEl.dataset.missed){reveal(sleepEl)}
+  }).catch(function(){});
   function reveal(b){b.classList.add('show');requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
   function typing(){var t=document.createElement('div');t.className='b in typing show on';t.innerHTML='<i></i><i></i><i></i>';return t}
   function play(i){
     if(i>=bubbles.length){reply.classList.add('on');return}
     var b=bubbles[i];
+    if(b.hidden){b.dataset.missed=1;return play(i+1)}
     if(still||i===0){reveal(b);return setTimeout(function(){play(i+1)},still?0:350)}
     var t=typing();chat.insertBefore(t,b);
     setTimeout(function(){t.remove();reveal(b);setTimeout(function(){play(i+1)},250)},500+Math.min(b.textContent.length*12,700));

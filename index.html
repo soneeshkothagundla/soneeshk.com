@@ -23,7 +23,7 @@ body{background:var(--bg);color:var(--fg);font:400 clamp(20px,2.6vw,26px)/1.5 Fi
 main{max-width:34ch;width:100%}
 p{opacity:0;transform:translateY(6px);animation:in .9s cubic-bezier(.2,.7,.2,1) forwards}
 p+p{margin-top:.9em}
-p:nth-child(2){animation-delay:.15s}p:nth-child(3){animation-delay:.3s}p:nth-child(4){animation-delay:.45s}
+p:nth-child(2){animation-delay:.15s}p:nth-child(3){animation-delay:.3s}
 @keyframes in{to{opacity:1;transform:none}}
 .wave{display:inline-block;transform-origin:70% 70%;animation:wave 2.2s .6s ease-in-out 1}
 @keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(14deg)}20%,40%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
@@ -49,8 +49,7 @@ button svg{width:18px;height:18px}
 <main>
   <p>Hi <span class="wave">👋</span></p>
   <p>I'm Soneesh <span class="say">(so niche)</span></p>
-  <p>I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>.</p>
-  <p>I'm also an <a href="https://www.amazon.com/Fasten-Your-Seatbelt-Changing-World/dp/B0G1SSKDZT" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</p>
+  <p>I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a>, <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>.</p>
 </main>
 <script>
 document.getElementById('t').onclick=function(){var r=document.documentElement,

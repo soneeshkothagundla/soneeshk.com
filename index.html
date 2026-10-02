@@ -100,8 +100,9 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="b in">Hi <span class="wave">👋</span></div>
   <div class="b in">I'm Soneesh <span class="say">(so niche)</span></div>
   <div class="b in">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>.</div>
-  <div class="b in last">I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
+  <div class="b in">I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
   <div class="b in" id="sleep" hidden></div>
+  <div class="b in last">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge</div>
   <div id="log" style="display:contents"></div>
   <button id="reply" type="button">Text back</button>
   <form id="f" novalidate>
@@ -132,6 +133,11 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
       still=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Play the incoming bubbles like a conversation: typing dots, then the message.
+  // Live local time in Cambridge, MA; ticks on the minute.
+  var clock=document.getElementById('clock'),fmt=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});
+  function tick(){clock.textContent=fmt.format(new Date());setTimeout(tick,60000-Date.now()%60000)}
+  tick();
+
   // Sleep bubble: filled from /api/sleep (Fitbit via Google Health API); stays hidden if unavailable.
   var sleepEl=document.getElementById('sleep');
   fetch('/api/sleep').then(function(r){return r.ok?r.json():null}).then(function(d){
@@ -140,7 +146,6 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     sleepEl.textContent='The amount of sleep I got today: ';
     var n=document.createElement('span');n.style.whiteSpace='nowrap';n.textContent=(h?h+'h ':'')+m+'m';sleepEl.appendChild(n);
     sleepEl.hidden=false;
-    var last=chat.querySelector('.b.in.last');if(last)last.classList.remove('last');sleepEl.classList.add('last');
     if(sleepEl.dataset.missed){reveal(sleepEl)}
   }).catch(function(){});
   function reveal(b){b.classList.add('show');requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}

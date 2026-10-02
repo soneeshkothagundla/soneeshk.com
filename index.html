@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Soneesh</title>
 <meta name="description" content="Founder, investor, creator, author, researcher, and philanthropist.">
+<link rel="canonical" href="https://soneeshk.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://soneeshk.com/">
+<meta property="og:site_name" content="Soneesh">
+<meta property="og:title" content="Hi 👋 I'm Soneesh">
+<meta property="og:description" content="Founder, investor, creator, author, researcher, and philanthropist.">
+<meta property="og:image" content="https://soneeshk.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Text bubbles: Hi, I'm Soneesh (so niche). Founder, investor, creator, author, researcher, and philanthropist.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hi 👋 I'm Soneesh">
+<meta name="twitter:description" content="Founder, investor, creator, author, researcher, and philanthropist.">
+<meta name="twitter:image" content="https://soneeshk.com/og.png">
 <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>">
@@ -46,11 +60,13 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes dot{0%,60%,100%{opacity:.35;transform:none}30%{opacity:1;transform:translateY(-2px)}}
 
+.read{align-self:flex-start;font-size:12px;color:var(--muted);margin:4px 0 0 6px;min-height:16px;opacity:0;transition:opacity .5s}
+.read.on{opacity:1}
 .meta{align-self:flex-end;font-size:12px;color:var(--muted);margin-top:3px;min-height:16px}
 .meta.err{color:var(--err)}
 .meta button{all:unset;cursor:pointer;text-decoration:underline}
 
-#reply{align-self:flex-start;margin-top:18px;font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;
+#reply{align-self:flex-start;margin-top:8px;font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;
   padding:10px 2px;min-height:44px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
 #reply.on{opacity:1;visibility:visible}
 #reply:hover{text-decoration:underline;text-underline-offset:3px}
@@ -97,12 +113,10 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
 </button>
 <main id="chat" aria-live="polite">
-  <div class="b in">Hi <span class="wave">👋</span></div>
-  <div class="b in">I'm Soneesh <span class="say">(so niche)</span></div>
-  <div class="b in">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>.</div>
-  <div class="b in">I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
-  <div class="b in" id="sleep" hidden></div>
-  <div class="b in last">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge</div>
+  <div class="b in">Hi <span class="wave">👋</span> I'm Soneesh <span class="say">(so niche)</span></div>
+  <div class="b in">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>. I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
+  <div class="b in last">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> The amount of sleep I got today: <span id="slept" style="white-space:nowrap"></span></span></div>
+  <div class="read" id="read" aria-hidden="true"></div>
   <div id="log" style="display:contents"></div>
   <button id="reply" type="button">Text back</button>
   <form id="f" novalidate>
@@ -138,22 +152,21 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   function tick(){clock.textContent=fmt.format(new Date());setTimeout(tick,60000-Date.now()%60000)}
   tick();
 
-  // Sleep bubble: filled from /api/sleep (Fitbit via Google Health API); stays hidden if unavailable.
-  var sleepEl=document.getElementById('sleep');
+  // Sleep: filled from /api/sleep (Fitbit via Google Health API); stays hidden if unavailable.
   fetch('/api/sleep').then(function(r){return r.ok?r.json():null}).then(function(d){
     if(!d||!(d.minutes>0))return;
     var h=Math.floor(d.minutes/60),m=Math.round(d.minutes%60);
-    sleepEl.textContent='The amount of sleep I got today: ';
-    var n=document.createElement('span');n.style.whiteSpace='nowrap';n.textContent=(h?h+'h ':'')+m+'m';sleepEl.appendChild(n);
-    sleepEl.hidden=false;
-    if(sleepEl.dataset.missed){reveal(sleepEl)}
+    document.getElementById('slept').textContent=(h?h+'h ':'')+m+'m';
+    document.getElementById('sleep').hidden=false;
   }).catch(function(){});
   function reveal(b){b.classList.add('show');requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
   function typing(){var t=document.createElement('div');t.className='b in typing show on';t.innerHTML='<i></i><i></i><i></i>';return t}
   function play(i){
-    if(i>=bubbles.length){reply.classList.add('on');return}
+    if(i>=bubbles.length){
+      var rd=document.getElementById('read');rd.textContent='Read '+fmt.format(new Date());
+      setTimeout(function(){rd.classList.add('on')},still?0:500);
+      setTimeout(function(){reply.classList.add('on')},still?0:900);return}
     var b=bubbles[i];
-    if(b.hidden){b.dataset.missed=1;return play(i+1)}
     if(still||i===0){reveal(b);return setTimeout(function(){play(i+1)},still?0:350)}
     var t=typing();chat.insertBefore(t,b);
     setTimeout(function(){t.remove();reveal(b);setTimeout(function(){play(i+1)},250)},500+Math.min(b.textContent.length*12,700));

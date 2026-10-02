@@ -1,9 +1,31 @@
-// One-time: authorize read-only access to Fitbit sleep data and store the refresh token in Vercel.
-// Usage: node scripts/google-auth.mjs   (needs GOOGLE_CLIENT_ID/SECRET in .env.google, see below)
-// The refresh token is piped straight into `vercel env add` and never printed.
+// One-time: authorize a Google account and store its refresh token in Vercel (never printed).
+// Usage:
+//   node scripts/google-auth.mjs sleep      Fitbit sleep (surgeonsoneesh@gmail.com)  -> GOOGLE_REFRESH_TOKEN
+//   node scripts/google-auth.mjs calendar   Calendar     (soneesh@closrhealth.me)       -> GCAL_REFRESH_TOKEN
+// Needs GOOGLE_CLIENT_ID/SECRET in .env.google (git-ignored).
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { spawn, exec } from 'node:child_process';
+
+const PROFILES = {
+  sleep: {
+    scope: 'https://www.googleapis.com/auth/googlehealth.sleep.readonly',
+    hint: 'surgeonsoneesh@gmail.com',
+    tokenVar: 'GOOGLE_REFRESH_TOKEN',
+  },
+  calendar: {
+    // Busy times across calendars + create the booking event. Nothing else.
+    scope: [
+      'https://www.googleapis.com/auth/calendar.freebusy',
+      'https://www.googleapis.com/auth/calendar.calendarlist.readonly',
+      'https://www.googleapis.com/auth/calendar.events.owned',
+    ].join(' '),
+    hint: 'soneesh@closrhealth.me',
+    tokenVar: 'GCAL_REFRESH_TOKEN',
+  },
+};
+const profile = PROFILES[process.argv[2] || 'sleep'];
+if (!profile) { console.error('Unknown profile. Use: sleep | calendar'); process.exit(1); }
 
 const env = Object.fromEntries(
   readFileSync(new URL('../.env.google', import.meta.url), 'utf8')
@@ -11,12 +33,11 @@ const env = Object.fromEntries(
 );
 const { GOOGLE_CLIENT_ID: id, GOOGLE_CLIENT_SECRET: secret } = env;
 const PORT = 5555, REDIRECT = `http://localhost:${PORT}/callback`;
-const SCOPE = 'https://www.googleapis.com/auth/googlehealth.sleep.readonly';
 const SCOPE_ARGS = ['--scope', 'soneesh-kothagundlas-projects'];
 
 const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
-  client_id: id, redirect_uri: REDIRECT, response_type: 'code', scope: SCOPE,
-  access_type: 'offline', prompt: 'consent', login_hint: 'surgeonsoneesh@gmail.com',
+  client_id: id, redirect_uri: REDIRECT, response_type: 'code', scope: profile.scope,
+  access_type: 'offline', prompt: 'consent', login_hint: profile.hint,
 });
 
 function vercelEnvAdd(name, value) {
@@ -38,14 +59,14 @@ http.createServer(async (req, res) => {
   });
   const t = await r.json();
   if (!t.refresh_token) { res.end('No refresh token returned.'); console.error('token response keys:', Object.keys(t)); process.exit(1); }
+  console.log('Granted scopes:', t.scope);
   await vercelEnvAdd('GOOGLE_CLIENT_ID', id);
   await vercelEnvAdd('GOOGLE_CLIENT_SECRET', secret);
-  await vercelEnvAdd('GOOGLE_REFRESH_TOKEN', t.refresh_token);
+  await vercelEnvAdd(profile.tokenVar, t.refresh_token);
   res.end('Done. You can close this tab.');
-  console.log('Saved GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN to Vercel (production).');
+  console.log(`Saved ${profile.tokenVar} to Vercel (production).`);
   process.exit(0);
 }).listen(PORT, () => {
-  console.log('Opening Google consent in your browser…');
   console.log(authUrl);
   if (!process.env.NO_OPEN) exec(`start "" "${authUrl}"`);
 });

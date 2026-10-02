@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meet · Soneesh</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--fg:#f5f5f4;--muted:#8a8a87;--tile:#161617;--edge:#2c2c2e;--blue:#0a84ff;--red:#ff453a}
+*{margin:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.4 Figtree,"Google Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit}
+
+/* Lobby */
+#lobby{position:fixed;inset:0;display:grid;place-items:center;padding:24px}
+.lobby{width:min(420px,100%);display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.preview{position:relative;width:100%;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:var(--tile)}
+.preview video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.preview .off{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px}
+.lobby h1{font-weight:500;font-size:22px;letter-spacing:-.01em}
+.lobby p{color:var(--muted);font-size:14px}
+.lobby input{width:100%;font:inherit;font-size:16px;color:var(--fg);background:var(--tile);border:1px solid var(--edge);border-radius:22px;padding:11px 16px;outline:none;text-align:center}
+.lobby input:focus{border-color:color-mix(in srgb,var(--blue) 60%,var(--edge))}
+.join{width:100%;border:0;border-radius:22px;padding:12px;background:var(--blue);color:#fff;font-weight:500;cursor:pointer;transition:opacity .2s}
+.join:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px}
+
+/* Call */
+#call{position:fixed;inset:0;display:none}
+#call.on{display:block}
+#remote{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#remote.contain{object-fit:contain}
+.wait{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted)}
+.wait b{display:block;font-weight:500;color:var(--fg);font-size:20px;margin-bottom:6px}
+.dots{display:inline-flex;gap:5px;margin-top:14px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:dot 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{opacity:.35;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+#self{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:calc(96px + env(safe-area-inset-bottom));width:min(26vw,180px);aspect-ratio:3/4;
+  object-fit:cover;border-radius:18px;background:var(--tile);box-shadow:0 10px 40px rgba(0,0,0,.5);transform:scaleX(-1);transition:opacity .3s}
+#self.sharing{transform:none}
+.top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 30px;background:linear-gradient(rgba(0,0,0,.55),transparent);font-size:14px}
+.top .who{font-weight:500}
+.top .t{color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:10px;padding:10px;
+  border-radius:30px;background:rgba(28,28,30,.72);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.06)}
+.bar button{width:48px;height:48px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .12s}
+.bar button:active{transform:scale(.94)}
+.bar button.off{background:var(--fg);color:#000}
+.bar button.end{background:var(--red);width:64px;border-radius:24px}
+.bar svg{width:22px;height:22px}
+.toast{position:absolute;left:50%;top:calc(64px + env(safe-area-inset-top));transform:translateX(-50%);padding:8px 14px;border-radius:16px;background:rgba(28,28,30,.85);
+  font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1}
+#ended{position:fixed;inset:0;display:none;place-items:center;text-align:center}
+#ended.on{display:grid}
+#ended a{color:var(--blue);text-decoration:none;font-size:14px}
+@media (max-width:520px){.bar button{width:44px;height:44px}.bar button.end{width:58px}}
+</style>
+</head>
+<body>
+
+<section id="lobby">
+  <div class="lobby">
+    <div class="preview"><video id="pv" autoplay playsinline muted></video><div class="off" id="pvoff" hidden>Camera off</div></div>
+    <h1>Ready to join?</h1>
+    <p id="lobbyNote">A private call on soneeshk.com</p>
+    <input id="name" placeholder="Your name" maxlength="60" autocomplete="name">
+    <div class="row" style="width:100%">
+      <button class="join" id="joinBtn" disabled>Join</button>
+    </div>
+  </div>
+</section>
+
+<section id="call">
+  <video id="remote" autoplay playsinline></video>
+  <div class="wait" id="wait"><div><b>Waiting for the other person</b>They'll appear here when they join<div class="dots"><i></i><i></i><i></i></div></div></div>
+  <video id="self" autoplay playsinline muted></video>
+  <div class="top"><span class="who" id="who">soneeshk.com</span><span class="t" id="timer"></span></div>
+  <div class="toast" id="toast"></div>
+  <div class="bar">
+    <button id="mic" aria-label="Mute microphone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></button>
+    <button id="cam" aria-label="Turn camera off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10.5l5-3v9l-5-3z"/></svg></button>
+    <button id="share" aria-label="Share screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 13V8M9.5 10.5L12 8l2.5 2.5"/></svg></button>
+    <button id="copy" aria-label="Copy link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1 1M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1-1"/></svg></button>
+    <button id="leave" class="end" aria-label="Leave call"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-2.7 0-5.2.7-7.3 2-.6.4-.9 1.1-.7 1.8l.5 1.7c.2.7.9 1.1 1.6 1l2.4-.4c.6-.1 1.1-.6 1.2-1.2l.2-1.5c1.4-.4 2.8-.4 4.2 0l.2 1.5c.1.6.6 1.1 1.2 1.2l2.4.4c.7.1 1.4-.3 1.6-1l.5-1.7c.2-.7-.1-1.4-.7-1.8C17.2 9.7 14.7 9 12 9z"/></svg></button>
+  </div>
+</section>
+
+<section id="ended"><div><p style="font-size:20px;font-weight:500;margin-bottom:8px" id="endedMsg">Call ended</p><a href="/">soneeshk.com</a></div></section>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+
+// Signaling rides on Supabase Realtime broadcast; media is peer-to-peer WebRTC.
+const SB = 'https://rciyqllvmbgjmgllezwg.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjaXlxbGx2bWJnam1nbGxlendnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDA0NTEsImV4cCI6MjA5ODk3NjQ1MX0.YSDdfx4xDXDRSK4XBCBsosJUayv2XGrp5i_ji8-jc1Q';
+const ICE = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }];
+
+const $ = (id) => document.getElementById(id);
+const room = (location.pathname.split('/')[2] || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+const me = crypto.randomUUID();
+let stream, pc, peer = null, ch, camTrack, screenTrack, startedAt, tick, pendingIce = [], sendFn;
+
+if (room.length < 8) { document.body.innerHTML = '<div style="height:100%;display:grid;place-items:center;color:#8a8a87">This meeting link isn’t valid.</div>'; throw 0; }
+
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); }
+
+// ---- Lobby ----
+try { $('name').value = localStorage.getItem('meet-name') || ''; } catch {}
+const ready = () => { $('joinBtn').disabled = !$('name').value.trim(); };
+$('name').oninput = ready; ready();
+$('name').onkeydown = (e) => { if (e.key === 'Enter' && !$('joinBtn').disabled) $('joinBtn').click(); };
+try {
+  stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }, audio: { echoCancellation: true, noiseSuppression: true } });
+} catch {
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { stream = new MediaStream(); }
+  $('pvoff').hidden = false; $('lobbyNote').textContent = 'Camera or mic blocked — you can still join';
+}
+$('pv').srcObject = stream;
+camTrack = stream.getVideoTracks()[0];
+
+$('joinBtn').onclick = async () => {
+  const name = $('name').value.trim().slice(0, 60);
+  try { localStorage.setItem('meet-name', name); } catch {}
+  $('lobby').remove(); $('call').classList.add('on'); $('self').srcObject = stream;
+  join(name);
+};
+
+// ---- Signaling ----
+function join(name) {
+  const sb = createClient(SB, KEY, { realtime: { params: { eventsPerSecond: 20 } } });
+  ch = sb.channel('meet:' + room, { config: { broadcast: { self: false }, presence: { key: me } } });
+  const send = (type, payload) => ch.send({ type: 'broadcast', event: 'sig', payload: { type, from: me, to: peer?.id, ...payload } });
+
+  ch.on('presence', { event: 'sync' }, () => {
+    const others = Object.entries(ch.presenceState()).filter(([k]) => k !== me).map(([k, v]) => ({ id: k, name: v[0]?.name || 'Guest', at: v[0]?.at || 0 }));
+    const ids = Object.keys(ch.presenceState()).sort();
+    if (ids.length > 2 && ids.indexOf(me) > 1 && !peer) { end('This call is full'); return; }
+    const other = others.sort((a, b) => a.at - b.at)[0];
+    if (other && (!peer || peer.id !== other.id)) {
+      peer = other; $('who').textContent = other.name;
+      connect(me < other.id, send);           // the smaller id makes the offer
+    } else if (!other && peer) {
+      toast(peer.name + ' left'); hangupPeer(); $('who').textContent = 'soneeshk.com';
+    }
+  });
+  ch.on('broadcast', { event: 'sig' }, async ({ payload: m }) => {
+    if (m.to !== me) return;
+    // An offer can beat our presence sync: adopt the sender as the peer and answer.
+    if (m.type === 'sdp' && m.sdp?.type === 'offer' && (!pc || m.from !== peer?.id)) {
+      const v = ch.presenceState()[m.from];
+      peer = { id: m.from, name: v?.[0]?.name || 'Guest', at: v?.[0]?.at || 0 }; $('who').textContent = peer.name;
+      connect(false, send);
+    }
+    if (!pc || m.from !== peer?.id) return;
+    if (m.type === 'sdp') {
+      await pc.setRemoteDescription(m.sdp);
+      for (const c of pendingIce.splice(0)) { try { await pc.addIceCandidate(c); } catch {} }
+      if (m.sdp.type === 'offer') { await pc.setLocalDescription(); send('sdp', { sdp: pc.localDescription }); }
+    } else if (m.type === 'ice' && m.ice) {
+      if (!pc.remoteDescription) pendingIce.push(m.ice);
+      else { try { await pc.addIceCandidate(m.ice); } catch {} }
+    }
+  });
+  ch.subscribe((s) => { if (s === 'SUBSCRIBED') ch.track({ name, at: Date.now() }); });
+}
+
+function connect(offerer, send) {
+  hangupPeer(true);
+  pc = new RTCPeerConnection({ iceServers: ICE });
+  stream.getTracks().forEach((t) => pc.addTrack(t, stream));
+  if (!stream.getVideoTracks().length) pc.addTransceiver('video', { direction: 'recvonly' });
+  if (!stream.getAudioTracks().length) pc.addTransceiver('audio', { direction: 'recvonly' });
+  pc.onicecandidate = (e) => e.candidate && send('ice', { ice: e.candidate });
+  pc.ontrack = (e) => { $('remote').srcObject = e.streams[0] || new MediaStream([e.track]); $('wait').style.display = 'none'; startTimer(); };
+  pc.onconnectionstatechange = () => {
+    if (pc?.connectionState === 'failed') { toast('Connection failed — retrying'); if (offerer) pc.restartIce(); }
+  };
+  if (offerer) {
+    pc.onnegotiationneeded = async () => { await pc.setLocalDescription(); send('sdp', { sdp: pc.localDescription }); };
+  }
+}
+
+function hangupPeer(keepPeer) {
+  if (pc) { pc.close(); pc = null; }
+  pendingIce = [];
+  if (!keepPeer) { peer = null; $('remote').srcObject = null; $('wait').style.display = ''; stopTimer(); }
+}
+
+function startTimer() {
+  if (startedAt) return; startedAt = Date.now();
+  tick = setInterval(() => { const s = Math.floor((Date.now() - startedAt) / 1000); $('timer').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }, 1000);
+}
+function stopTimer() { clearInterval(tick); startedAt = 0; $('timer').textContent = ''; }
+
+// ---- Controls ----
+$('mic').onclick = function () {
+  const t = stream.getAudioTracks()[0]; if (!t) return toast('No microphone');
+  t.enabled = !t.enabled; this.classList.toggle('off', !t.enabled); toast(t.enabled ? 'Mic on' : 'Muted');
+};
+$('cam').onclick = function () {
+  if (!camTrack) return toast('No camera');
+  camTrack.enabled = !camTrack.enabled; this.classList.toggle('off', !camTrack.enabled); $('self').style.opacity = camTrack.enabled ? 1 : .35;
+};
+$('share').onclick = async function () {
+  const sender = pc?.getSenders().find((s) => s.track?.kind === 'video');
+  if (screenTrack) { stopShare(sender); return; }
+  try {
+    const d = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    screenTrack = d.getVideoTracks()[0];
+    if (sender) await sender.replaceTrack(screenTrack);
+    $('self').srcObject = d; $('self').classList.add('sharing'); this.classList.add('off');
+    screenTrack.onended = () => stopShare(pc?.getSenders().find((s) => s.track?.kind === 'video'));
+  } catch {}
+};
+function stopShare(sender) {
+  screenTrack?.stop(); screenTrack = null;
+  if (sender && camTrack) sender.replaceTrack(camTrack);
+  $('self').srcObject = stream; $('self').classList.remove('sharing'); $('share').classList.remove('off');
+}
+$('copy').onclick = async () => { try { await navigator.clipboard.writeText(location.href); toast('Link copied'); } catch { toast(location.href); } };
+$('remote').ondblclick = function () { this.classList.toggle('contain'); };
+$('leave').onclick = () => end('Call ended');
+
+function end(msg) {
+  try { ch?.untrack(); ch?.unsubscribe(); } catch {}
+  hangupPeer(); stream?.getTracks().forEach((t) => t.stop()); screenTrack?.stop();
+  $('call')?.remove(); $('lobby')?.remove(); $('endedMsg').textContent = msg; $('ended').classList.add('on');
+}
+addEventListener('pagehide', () => { try { ch?.untrack(); } catch {} });
+</script>
+</body>
+</html>

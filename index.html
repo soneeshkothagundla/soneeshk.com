@@ -118,10 +118,37 @@ dialog p{font-size:14px;color:var(--muted);margin-top:8px}
 .meta.err{color:var(--err)}
 .meta button{all:unset;cursor:pointer;text-decoration:underline}
 
-#reply{align-self:flex-start;margin-top:8px;font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;
-  padding:10px 2px;min-height:44px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
-#reply.on{opacity:1;visibility:visible}
-#reply:hover{text-decoration:underline;text-underline-offset:3px}
+#ctas{align-self:flex-start;display:flex;align-items:center;gap:6px;margin-top:8px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+#ctas.on{opacity:1;visibility:visible}
+#ctas i{width:3px;height:3px;border-radius:50%;background:var(--muted);opacity:.6}
+.cta{font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;padding:10px 2px;min-height:44px}
+.cta:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* Booking */
+.bk{margin-top:16px;display:none;flex-direction:column;gap:12px}
+.bk.on{display:flex;animation:up .35s cubic-bezier(.2,.9,.3,1)}
+.bk-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px;color:var(--muted)}
+.bk-h b{font-weight:500;color:var(--fg);font-size:15px}
+.bk-h button{all:unset;cursor:pointer;color:var(--muted)}
+.bk-h button:hover{color:var(--fg)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font:inherit;font-size:14px;color:var(--fg);background:var(--field);border:1px solid var(--edge);border-radius:16px;padding:7px 12px;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;font-variant-numeric:tabular-nums}
+.chip:hover{border-color:color-mix(in srgb,var(--out) 50%,var(--edge))}
+.chip.sel{background:var(--out);border-color:var(--out);color:#fff}
+.chip small{display:block;font-size:11px;opacity:.7}
+.times{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;max-height:212px;overflow-y:auto;scrollbar-width:thin}
+.times .chip{text-align:center;padding:8px 0}
+.bk form{margin:0;display:none;flex-direction:column;gap:8px}
+.bk form.on{display:flex}
+.bk .go{font:inherit;font-size:15px;font-weight:500;color:#fff;background:var(--out);border:0;border-radius:22px;padding:11px;cursor:pointer;transition:opacity .2s}
+.bk .go:disabled{opacity:.4;cursor:default}
+.bk-msg{font-size:13px;color:var(--muted);min-height:18px}
+.bk-msg.err{color:var(--err)}
+.ld{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle}
+.ld i{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:dot 1.2s infinite}
+.ld i:nth-child(2){animation-delay:.15s}.ld i:nth-child(3){animation-delay:.3s}
 
 form{margin-top:16px;display:none;flex-direction:column;gap:8px}
 form.on{display:flex;animation:up .35s cubic-bezier(.2,.9,.3,1)}
@@ -152,10 +179,11 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   .b{max-width:82%;padding:8px 13px;border-radius:19px}
   .b.photo{padding:0}
   /* Composer pins to the bottom like a messaging app */
-  form.on{position:sticky;bottom:0;margin:12px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  .bk form.on{position:static;margin:0;padding:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+  #f.on{position:sticky;bottom:0;margin:12px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
     background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 }
-@media (prefers-reduced-motion:reduce){.b,#reply{transition:none}.on .wave,.typing i{animation:none}}
+@media (prefers-reduced-motion:reduce){.b,#ctas{transition:none}.on .wave,.typing i{animation:none}}
 </style>
 <noscript><style>.b.in{display:block!important;opacity:1!important;transform:none!important}</style></noscript>
 </head>
@@ -175,7 +203,20 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="read" id="read" aria-hidden="true"></div>
   <div class="hint" id="hint">Tap a message to react</div>
   <div id="log" style="display:contents"></div>
-  <button id="reply" type="button">Text back</button>
+  <div id="ctas"><button class="cta" id="reply" type="button">Text back</button><i></i><button class="cta" id="bookBtn" type="button">Book a time</button></div>
+  <section class="bk" id="bk" aria-label="Book a time">
+    <div class="bk-h"><span><b>Book a time</b> &nbsp;10 min</span><button type="button" id="bkClose" aria-label="Close booking">Close</button></div>
+    <div class="bk-msg" id="bkMsg">Checking Soneesh's calendar<span class="ld"><i></i><i></i><i></i></span></div>
+    <div class="chips" id="days" role="listbox" aria-label="Day"></div>
+    <div class="times" id="times" role="listbox" aria-label="Time"></div>
+    <form id="bf" novalidate>
+      <input name="name" placeholder="Your name" autocomplete="name" maxlength="80" required>
+      <input name="email" type="email" placeholder="Your email (for the invite)" autocomplete="email" maxlength="254" required>
+      <input name="note" placeholder="What's it about? (optional)" maxlength="500">
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="go" type="submit" disabled>Book</button>
+    </form>
+  </section>
   <form id="f" novalidate>
     <input id="email" type="email" name="email" placeholder="Your email (so I can write back)" autocomplete="email" maxlength="254">
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -213,7 +254,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   // a database trigger then hands each new message to a Google Apps Script that emails it.
   var SB='https://rciyqllvmbgjmgllezwg.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjaXlxbGx2bWJnam1nbGxlendnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDA0NTEsImV4cCI6MjA5ODk3NjQ1MX0.YSDdfx4xDXDRSK4XBCBsosJUayv2XGrp5i_ji8-jc1Q';
   var chat=document.getElementById('chat'),log=document.getElementById('log'),bubbles=[].slice.call(chat.querySelectorAll('.b.in')),
-      reply=document.getElementById('reply'),form=document.getElementById('f'),msg=document.getElementById('msg'),
+      reply=document.getElementById('reply'),ctas=document.getElementById('ctas'),form=document.getElementById('f'),msg=document.getElementById('msg'),
       email=document.getElementById('email'),send=document.getElementById('send'),
       still=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -234,7 +275,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   var card=document.getElementById('card');
   document.getElementById('head').onclick=function(){card.showModal()};
   card.addEventListener('click',function(e){if(e.target===card||e.target.hasAttribute('data-close'))card.close()});
-  document.getElementById('cardText').onclick=function(){card.close();reply.classList.add('on');reply.click()};
+  document.getElementById('cardText').onclick=function(){card.close();ctas.classList.add('on');reply.click()};
 
   // Tapbacks: counts live in Supabase (site_reactions); writes only via the react() RPC.
   var EMO={heart:'❤️',like:'👍',dislike:'👎',haha:'😂',bang:'‼️',question:'❓'},counts={},mine={},picker=null;
@@ -290,7 +331,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     if(i>=bubbles.length){
       var rd=document.getElementById('read');rd.textContent='Read '+fmt.format(new Date());
       setTimeout(function(){rd.classList.add('on')},still?0:500);
-      setTimeout(function(){reply.classList.add('on');if(!Object.keys(mine).length)document.getElementById('hint').classList.add('on')},still?0:900);return}
+      setTimeout(function(){ctas.classList.add('on');if(!Object.keys(mine).length)document.getElementById('hint').classList.add('on')},still?0:900);return}
     var b=bubbles[i];
     if(still||i===0){reveal(b);return setTimeout(function(){play(i+1)},still?0:350)}
     var t=typing();b.appendChild(t);
@@ -298,7 +339,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   }
   setTimeout(function(){play(0)},still?0:300);
 
-  reply.onclick=function(){reply.style.display='none';form.classList.add('on');(email.value?msg:email).focus({preventScroll:true});
+  reply.onclick=function(){ctas.style.display='none';form.classList.add('on');(email.value?msg:email).focus({preventScroll:true});
     form.scrollIntoView({block:'end',behavior:still?'auto':'smooth'})};
 
   function grow(){msg.style.height='auto';msg.style.height=msg.scrollHeight+'px'}
@@ -332,5 +373,6 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   };
 })();
 </script>
+<script src="/book.js" defer></script>
 </body>
 </html>

@@ -199,7 +199,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   </button>
   <div class="b in" data-id="hi">Hi <span class="wave">👋</span> I'm Soneesh <span class="say">(so niche)</span></div>
   <div class="b in" data-id="roles">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>, and <a href="https://chapter-two-bice.vercel.app" target="_blank" rel="noopener">philanthropist</a>. I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
-  <div class="b in last" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> The amount of sleep I got today: <span id="slept" style="white-space:nowrap"></span></span></div>
+  <div class="b in last" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span></span></div>
   <div class="read" id="read" aria-hidden="true"></div>
   <div class="hint" id="hint">Tap a message to react</div>
   <div id="log" style="display:contents"></div>
@@ -268,7 +268,16 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   fetch('/api/sleep').then(function(r){return r.ok?r.json():null}).then(function(d){
     if(!d||!(d.minutes>0))return;
     var h=Math.floor(d.minutes/60),m=Math.round(d.minutes%60);
-    document.getElementById('slept').textContent=(h?h+'h ':'')+m+'m';
+    var dur=(h?h+'h ':'')+m+'m';
+    if(d.today||!d.date){document.getElementById('slept').textContent=dur}
+    else{
+      // Tracker missed today: show the most recent night instead.
+      var p=d.date.split('-'),day=new Date(Date.UTC(+p[0],+p[1]-1,+p[2],12));
+      var y=new Date(Date.now()-864e5).toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+      var when=d.date===y?'Yesterday':'On '+day.toLocaleDateString('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'})+',';
+      document.getElementById('sleepLead').textContent=when+' I got';
+      document.getElementById('slept').textContent=dur+' of sleep.';
+    }
     document.getElementById('sleep').hidden=false;
   }).catch(function(){});
   // Contact card

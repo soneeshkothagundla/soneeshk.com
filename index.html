@@ -51,6 +51,23 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 :root[data-theme=dark] .in:not(.typing):not(.photo):hover{filter:brightness(1.12)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .in:not(.typing):not(.photo):hover{filter:brightness(1.12)}}
 
+/* Live 1-10 poll: each number is a column whose bar is its share of the votes */
+.poll{width:85%;cursor:default}
+.in.poll:hover{filter:none!important}
+.pq{font-weight:500;margin-bottom:10px}
+.pbars{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;align-items:end}
+.pbars button{all:unset;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border-radius:8px;padding:2px 0;-webkit-tap-highlight-color:transparent}
+.pbars button:focus-visible{outline:2px solid var(--out);outline-offset:1px}
+.pc{font-size:11px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.pb{width:100%;height:56px;display:flex;align-items:flex-end;justify-content:center}
+.pb i{display:block;width:72%;height:0;min-height:3px;border-radius:4px;background:color-mix(in srgb,var(--fg) 22%,transparent);transition:height .5s cubic-bezier(.2,.9,.3,1),background .2s}
+.pbars button:hover .pb i{background:color-mix(in srgb,var(--fg) 36%,transparent)}
+.pn{font-size:14px;font-variant-numeric:tabular-nums}
+.pbars .sel .pb i{background:var(--out)}
+.pbars .sel .pn,.pbars .sel .pc{color:var(--out);font-weight:500}
+.pm{font-size:13px;color:var(--muted);margin-top:8px}
+@media (prefers-reduced-motion:reduce){.pb i{transition:none}}
+
 /* Contact header, like the top of an iMessage thread */
 .head{all:unset;align-self:center;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;margin-bottom:22px;
   -webkit-tap-highlight-color:transparent;border-radius:14px;padding:4px 10px}
@@ -81,6 +98,8 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 .picker button.sel{background:var(--out)}
 .hint{align-self:flex-start;font-size:12px;color:var(--muted);margin:2px 0 0 6px;opacity:0;transition:opacity .5s}
 .hint.on{opacity:.8}
+.secrets{align-self:center;text-align:center;font-size:12px;color:var(--muted);margin-top:28px;opacity:0;transition:opacity .6s .4s}
+#ctas.on~.secrets{opacity:.8}
 
 /* Contact card */
 dialog{margin:auto;border:0;padding:28px 22px 22px;border-radius:22px;width:min(340px,calc(100vw - 32px));background:var(--field);color:var(--fg);
@@ -211,7 +230,8 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="b in" data-id="hi">Hi <span class="wave">👋</span> I'm Soneesh <span class="say">(so niche)</span></div>
   <div class="b in" data-id="roles">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, and <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>. I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
   <div class="b in ink" role="button" tabindex="0" aria-label="Hidden message. Tap to reveal.">What I'm building next: <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">Capsule Space Labs</a> &amp; <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">Boston Square Ventures</a></div>
-  <div class="b in last" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span></span><span id="steps" hidden> Steps today: <span id="stepN"></span>.</span></div>
+  <div class="b in" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span></span><span id="steps" hidden> Steps today: <span id="stepN"></span>.</span></div>
+  <div class="b in last poll" id="poll"><div class="pq">On a scale of 1–10, how much do you like this personal website?</div><div class="pbars" role="group" aria-label="Vote from 1 to 10"><button type="button" data-s="1" aria-label="Vote 1"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">1</span></button><button type="button" data-s="2" aria-label="Vote 2"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">2</span></button><button type="button" data-s="3" aria-label="Vote 3"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">3</span></button><button type="button" data-s="4" aria-label="Vote 4"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">4</span></button><button type="button" data-s="5" aria-label="Vote 5"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">5</span></button><button type="button" data-s="6" aria-label="Vote 6"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">6</span></button><button type="button" data-s="7" aria-label="Vote 7"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">7</span></button><button type="button" data-s="8" aria-label="Vote 8"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">8</span></button><button type="button" data-s="9" aria-label="Vote 9"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">9</span></button><button type="button" data-s="10" aria-label="Vote 10"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">10</span></button></div><div class="pm" id="pollMeta" aria-live="polite">Tap a number to vote</div></div>
   <div class="read" id="read" aria-hidden="true"></div>
   <div class="focus" id="focus" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Soneesh has notifications silenced</div>
   <div class="hint" id="hint">Tap a message to react</div>
@@ -242,6 +262,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     </div>
     <p class="note">Will respond via email</p>
   </form>
+  <p class="secrets">There’s secrets all over this website. Just gotta click and find out.</p>
 </main>
 <dialog id="card" aria-label="Contact card">
   <button class="x" type="button" aria-label="Close" data-close>&times;</button>
@@ -385,6 +406,46 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   });
   document.addEventListener('click',function(e){if(picker&&!e.target.closest('#chat'))closePicker()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closePicker()});
+
+  // Live poll: votes live in Supabase (site_poll_votes) behind the poll_vote()/poll_results() RPCs.
+  // One vote per browser via a random voter id; voting again changes it. Totals refresh every 15s.
+  var poll=document.getElementById('poll'),pollMeta=document.getElementById('pollMeta'),voter=null,myVote=0,pollData=null;
+  try{voter=localStorage.getItem('pollVoter');myVote=+localStorage.getItem('pollVote')||0}catch(e){}
+  if(!voter){
+    voter=window.crypto&&crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
+    try{localStorage.setItem('pollVoter',voter)}catch(e){}
+  }
+  function drawPoll(d){
+    if(!d||!d.counts)return;pollData=d;
+    var max=Math.max.apply(null,d.counts.concat(1));
+    poll.querySelectorAll('.pbars button').forEach(function(btn,i){
+      var n=d.counts[i]||0;
+      btn.querySelector('.pc').textContent=n;
+      btn.querySelector('.pb i').style.height=(n/max*100)+'%';
+      btn.classList.toggle('sel',myVote===i+1);
+      btn.setAttribute('aria-label','Vote '+(i+1)+', '+n+(n===1?' vote':' votes'));
+    });
+    pollMeta.textContent=!d.total?'No votes yet. Be the first.':
+      d.avg+' average · '+d.total+(d.total===1?' vote':' votes')+(myVote?' · you voted '+myVote:' · tap to vote');
+  }
+  function loadPoll(){
+    api('rpc/poll_results',{method:'POST',body:'{}'}).then(function(r){return r.ok?r.json():null}).then(drawPoll).catch(function(){});
+  }
+  poll.querySelector('.pbars').addEventListener('click',function(e){
+    var btn=e.target.closest('button');if(!btn)return;
+    var s=+btn.dataset.s,prev=myVote;if(s===prev)return;
+    myVote=s;try{localStorage.setItem('pollVote',s)}catch(e){}
+    if(pollData){ // optimistic update
+      var c=pollData.counts.slice(),t=pollData.total,sum=(pollData.avg||0)*t;
+      if(prev){c[prev-1]--;sum-=prev}else{t++}
+      c[s-1]++;sum+=s;drawPoll({counts:c,total:t,avg:Math.round(sum/t*10)/10});
+    }
+    api('rpc/poll_vote',{method:'POST',body:JSON.stringify({p_voter:voter,p_score:s})})
+      .then(function(r){return r.ok?r.json():null}).then(function(d){d?drawPoll(d):loadPoll()}).catch(loadPoll);
+  });
+  loadPoll();
+  setInterval(function(){if(!document.hidden)loadPoll()},15000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)loadPoll()});
 
   function reveal(b){b.classList.add('show');if(b.inkStart)b.inkStart();requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
   function typing(){var t=document.createElement('div');t.className='b in typing show on ghost';t.innerHTML='<i></i><i></i><i></i>';return t}

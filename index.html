@@ -100,6 +100,7 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 .hint.on{opacity:.8}
 .secrets{align-self:center;text-align:center;font-size:12px;color:var(--muted);margin-top:28px;opacity:0;transition:opacity .6s .4s}
 #ctas.on~.secrets{opacity:.8}
+.visitors+.secrets{margin-top:4px}
 
 /* Contact card */
 dialog{margin:auto;border:0;padding:28px 22px 22px;border-radius:22px;width:min(340px,calc(100vw - 32px));background:var(--field);color:var(--fg);
@@ -262,6 +263,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     </div>
     <p class="note">Will respond via email</p>
   </form>
+  <p class="secrets visitors" id="visitors" hidden></p>
   <p class="secrets">There’s secrets all over this website. Just gotta click and find out.</p>
 </main>
 <dialog id="card" aria-label="Contact card">
@@ -406,6 +408,18 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   });
   document.addEventListener('click',function(e){if(picker&&!e.target.closest('#chat'))closePicker()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closePicker()});
+
+  // Visitor count: one row per browser in Supabase (site_visitors) via the visit() RPC.
+  // Automated browsers (navigator.webdriver) only read the count, so tests and bots don't inflate it.
+  var vid=null;
+  try{vid=localStorage.getItem('visitorId');if(!vid){vid=window.crypto&&crypto.randomUUID?crypto.randomUUID():null;if(vid)localStorage.setItem('visitorId',vid)}}catch(e){vid=null}
+  api('rpc/visit',{method:'POST',body:JSON.stringify({p_visitor:navigator.webdriver?null:vid})})
+    .then(function(r){return r.ok?r.json():null}).then(function(d){
+      if(!d||!d.total)return;
+      var el=document.getElementById('visitors'),n=function(x){return Number(x).toLocaleString('en-US')};
+      el.textContent=d.you?'You’re visitor #'+n(d.you)+' of '+n(d.total)+'.':n(d.total)+(d.total==1?' visitor':' visitors')+' so far.';
+      el.hidden=false;
+    }).catch(function(){});
 
   // Live poll: votes live in Supabase (site_poll_votes) behind the poll_vote()/poll_results() RPCs.
   // One vote per browser via a random voter id; voting again changes it. Totals refresh every 15s.

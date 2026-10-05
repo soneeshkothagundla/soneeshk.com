@@ -218,6 +218,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     </form>
   </section>
   <form id="f" novalidate>
+    <div class="bk-h"><span><b>Text back</b></span><button type="button" id="fClose" aria-label="Close message">Close</button></div>
     <input id="email" type="email" name="email" placeholder="Your email (so I can write back)" autocomplete="email" maxlength="254">
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="bar">
@@ -350,6 +351,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
 
   reply.onclick=function(){ctas.style.display='none';form.classList.add('on');(email.value?msg:email).focus({preventScroll:true});
     form.scrollIntoView({block:'end',behavior:still?'auto':'smooth'})};
+  document.getElementById('fClose').onclick=function(){form.classList.remove('on');ctas.style.display=''};
 
   function grow(){msg.style.height='auto';msg.style.height=msg.scrollHeight+'px'}
   function valid(){return msg.value.trim().length>0&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())}

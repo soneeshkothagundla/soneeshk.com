@@ -102,6 +102,20 @@ main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
 #ctas.on~.secrets{opacity:.8}
 .visitors+.secrets{margin-top:4px}
 
+/* Secrets */
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+:root.green{--out:#30d158}
+.av{transition:transform .2s}
+.head{-webkit-touch-callout:none}
+.head.hold .av{transform:scale(.92);transition:transform 2s linear}
+dialog .back{display:none}
+dialog.flipped>:not(.back):not(.x){display:none}
+dialog.flipped .back{display:block}
+dialog.flipped{animation:flip .5s cubic-bezier(.2,.9,.3,1)}
+@keyframes flip{from{transform:perspective(800px) rotateY(-90deg)}to{transform:none}}
+dialog .back .big{font-size:44px;margin-top:6px}
+dialog .back button{all:unset;cursor:pointer;display:inline-block;margin-top:18px;padding:10px 18px;border-radius:999px;background:var(--out);color:#fff;font-size:14px}
+
 /* Contact card */
 dialog{margin:auto;border:0;padding:28px 22px 22px;border-radius:22px;width:min(340px,calc(100vw - 32px));background:var(--field);color:var(--fg);
   text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}
@@ -279,6 +293,12 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     <a href="https://www.instagram.com/soneeshk/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>instagram</a>
     <a href="https://www.youtube.com/@SoneeshKothagundla04" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 00-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 001 7.2 31 31 0 00.5 12 31 31 0 001 16.8a3 3 0 002.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 002.1-2.1 31 31 0 00.5-4.8 31 31 0 00-.5-4.8zM9.8 15.1V8.9l5.8 3.1z"/></svg>youtube</a>
   </div>
+  <div class="back">
+    <div class="big" aria-hidden="true">🤫</div>
+    <h2>You held on.</h2>
+    <p>Most people just tap. You found the back of the card. Text me “held on” so I know you were here.</p>
+    <button type="button" id="heldOn">Text “held on”</button>
+  </div>
 </dialog>
 <script>
 (function(){
@@ -290,6 +310,19 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   // Public Supabase project + anon key. Row Level Security only lets anon INSERT into site_messages;
   // a database trigger then hands each new message to a Google Apps Script that emails it.
   var SB='https://rciyqllvmbgjmgllezwg.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjaXlxbGx2bWJnam1nbGxlendnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDA0NTEsImV4cCI6MjA5ODk3NjQ1MX0.YSDdfx4xDXDRSK4XBCBsosJUayv2XGrp5i_ji8-jc1Q';
+  // Secret: a time-of-day bubble, by Cambridge time, slotted in before the poll.
+  (function(){
+    var p={};new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hourCycle:'h23',weekday:'short'})
+      .formatToParts(new Date()).forEach(function(x){p[x.type]=x.value});
+    var h=+p.hour,text=null;
+    if(h<5)text='It\u2019s late here. Why are we both awake? \ud83d\udc40';
+    else if(h<7)text='You\u2019re up early. Respect. \u2600\ufe0f';
+    else if(p.weekday==='Fri'&&h>=17)text='Happy Friday night \ud83c\udf89';
+    else if((p.weekday==='Sat'||p.weekday==='Sun')&&h<11)text='Slow weekend morning. Coffee first \u2615';
+    if(!text)return;
+    var b=document.createElement('div');b.className='b in';b.textContent=text;
+    var pl=document.getElementById('poll');pl.parentNode.insertBefore(b,pl);
+  })();
   var chat=document.getElementById('chat'),log=document.getElementById('log'),bubbles=[].slice.call(chat.querySelectorAll('.b.in')),
       reply=document.getElementById('reply'),ctas=document.getElementById('ctas'),form=document.getElementById('f'),msg=document.getElementById('msg'),
       email=document.getElementById('email'),send=document.getElementById('send'),
@@ -449,6 +482,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     var btn=e.target.closest('button');if(!btn)return;
     var s=+btn.dataset.s,prev=myVote;if(s===prev)return;
     myVote=s;try{localStorage.setItem('pollVote',s)}catch(e){}
+    pollEgg(s);
     if(pollData){ // optimistic update
       var c=pollData.counts.slice(),t=pollData.total,sum=(pollData.avg||0)*t;
       if(prev){c[prev-1]--;sum-=prev}else{t++}
@@ -460,6 +494,79 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   loadPoll();
   setInterval(function(){if(!document.hidden)loadPoll()},15000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)loadPoll()});
+
+  // ---- Secrets ----
+  // Confetti on a full-screen canvas; skipped for reduced motion.
+  function confetti(){
+    if(still)return;
+    var c=document.createElement('canvas'),x=c.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
+    c.id='confetti';c.width=W*dpr;c.height=H*dpr;x.scale(dpr,dpr);document.body.appendChild(c);
+    var cols=['#0a84ff','#30d158','#ff9f0a','#ff375f','#bf5af2','#ffd60a'],ps=[];
+    for(var i=0;i<160;i++)ps.push({x:W/2+(Math.random()-.5)*W*.3,y:H*.35,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,
+      r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,w:6+Math.random()*6,h:8+Math.random()*8,c:cols[i%cols.length]});
+    var t0=performance.now();
+    (function f(t){
+      var k=(t-t0)/2600;x.clearRect(0,0,W,H);
+      ps.forEach(function(p){p.vy+=.35;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;
+        x.save();x.globalAlpha=Math.max(0,1-k);x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h*Math.abs(Math.cos(p.r*2)));x.restore()});
+      if(k<1)requestAnimationFrame(f);else c.remove();
+    })(t0);
+  }
+  // An incoming bubble that "types" into the thread.
+  function secretBubble(text){
+    var b=document.createElement('div');b.className='b in show';b.textContent=text;
+    var t=typing();t.classList.remove('ghost');log.appendChild(t);
+    t.scrollIntoView({block:'nearest',behavior:still?'auto':'smooth'});
+    setTimeout(function(){t.remove();log.appendChild(b);requestAnimationFrame(function(){b.classList.add('on')})},still?0:900);
+  }
+  var seen={};
+  function once(key,text){if(seen[key])return;seen[key]=1;secretBubble(text)}
+
+  // Poll: a 10 gets confetti, a 1 gets a straight face.
+  function pollEgg(s){
+    if(s===10){confetti();once('p10','A 10?! \ud83e\udef6 You\u2019re officially my favorite visitor.')}
+    else if(s===1)once('p1','Noted. \ud83d\ude10 Text back and tell me what to fix.');
+  }
+
+  // Konami code: confetti + green bubbles (enter it again to switch back).
+  var KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'],kpos=0;
+  document.addEventListener('keydown',function(e){
+    var k=e.key.length===1?e.key.toLowerCase():e.key;
+    kpos=k===KONAMI[kpos]?kpos+1:(k===KONAMI[0]?1:0);
+    if(kpos<KONAMI.length)return;kpos=0;
+    var on=root.classList.toggle('green');confetti();
+    if(on)once('konami','\u2191\u2191\u2193\u2193\u2190\u2192\u2190\u2192 B A. A person of culture. Green bubbles unlocked \ud83d\udfe2');
+  });
+
+  // Hold the SK avatar for 2 seconds: the contact card opens flipped to a hidden back.
+  var head=document.getElementById('head'),holdT=null,held=false;
+  function holdEnd(){clearTimeout(holdT);head.classList.remove('hold')}
+  head.addEventListener('pointerdown',function(){
+    held=false;head.classList.add('hold');
+    holdT=setTimeout(function(){held=true;holdEnd();card.classList.add('flipped');card.showModal();if(navigator.vibrate)navigator.vibrate(30)},2000);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){head.addEventListener(ev,holdEnd)});
+  head.addEventListener('contextmenu',function(e){e.preventDefault()});
+  head.addEventListener('click',function(e){if(held){e.stopImmediatePropagation();held=false}},true);
+  card.addEventListener('close',function(){card.classList.remove('flipped')});
+  document.getElementById('heldOn').onclick=function(){card.close();ctas.classList.add('on');reply.click();if(!msg.value){msg.value='held on';msg.oninput()}};
+
+  // Shake the phone: confetti. iOS needs motion permission, asked on the first tap in the thread.
+  var lastShake=0,prevA=null;
+  function onMotion(e){
+    var a=e.accelerationIncludingGravity;if(!a||a.x==null)return;
+    if(prevA){
+      var d=Math.abs(a.x-prevA.x)+Math.abs(a.y-prevA.y)+Math.abs(a.z-prevA.z),now=Date.now();
+      if(d>35&&now-lastShake>1500){lastShake=now;confetti();once('shake','You shook me \ud83e\udee8')}
+    }
+    prevA={x:a.x,y:a.y,z:a.z};
+  }
+  if(window.DeviceMotionEvent){
+    if(typeof DeviceMotionEvent.requestPermission==='function'){
+      chat.addEventListener('click',function ask(){chat.removeEventListener('click',ask);
+        DeviceMotionEvent.requestPermission().then(function(r){if(r==='granted')addEventListener('devicemotion',onMotion)}).catch(function(){})});
+    }else addEventListener('devicemotion',onMotion);
+  }
 
   function reveal(b){b.classList.add('show');if(b.inkStart)b.inkStart();requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
   function typing(){var t=document.createElement('div');t.className='b in typing show on ghost';t.innerHTML='<i></i><i></i><i></i>';return t}

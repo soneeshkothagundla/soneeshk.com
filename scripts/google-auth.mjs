@@ -1,6 +1,6 @@
 // One-time: authorize a Google account and store its refresh token in Vercel (never printed).
 // Usage:
-//   node scripts/google-auth.mjs sleep      Fitbit sleep (surgeonsoneesh@gmail.com)  -> GOOGLE_REFRESH_TOKEN
+//   node scripts/google-auth.mjs sleep      Fitbit sleep + steps (surgeonsoneesh@gmail.com) -> GOOGLE_REFRESH_TOKEN
 //   node scripts/google-auth.mjs calendar   Calendar     (soneesh@closrhealth.me)       -> GCAL_REFRESH_TOKEN
 // Needs GOOGLE_CLIENT_ID/SECRET in .env.google (git-ignored).
 import http from 'node:http';
@@ -9,7 +9,8 @@ import { spawn, exec } from 'node:child_process';
 
 const PROFILES = {
   sleep: {
-    scope: 'https://www.googleapis.com/auth/googlehealth.sleep.readonly',
+    // Sleep + steps from the same Fitbit account.
+    scope: 'https://www.googleapis.com/auth/googlehealth.sleep.readonly https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly',
     hint: 'surgeonsoneesh@gmail.com',
     tokenVar: 'GOOGLE_REFRESH_TOKEN',
   },

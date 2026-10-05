@@ -1,33 +1,8 @@
 // GET /api/sleep — minutes Soneesh slept "today" (sessions ending since local midnight), or on the
 // most recent day with sleep if today has none,
 // read from the Google Health API (Fitbit). Cached at the edge so Google is hit at most ~2x/hour.
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN } = process.env;
-const TZ = process.env.SLEEP_TZ || 'America/New_York';
-const API = 'https://health.googleapis.com/v4/users/me/dataTypes/sleep/dataPoints';
-
-const json = (status, body, maxAge = 1800) =>
-  Response.json(body, {
-    status,
-    headers: { 'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=3600` },
-  });
-
-// YYYY-MM-DD of an instant in TZ.
-const localDate = (d = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(d);
-
-async function accessToken() {
-  const r = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
-      refresh_token: GOOGLE_REFRESH_TOKEN,
-      grant_type: 'refresh_token',
-    }),
-  });
-  if (!r.ok) throw new Error(`token ${r.status}: ${await r.text()}`);
-  return (await r.json()).access_token;
-}
+import { configured, json, localDate, accessToken, HEALTH } from './_lib/health.js';
+const API = `${HEALTH}/sleep/dataPoints`;
 
 // minutesAsleep lives in the sleep summary; search for it so small schema shifts don't break us.
 function minutesAsleep(node) {
@@ -41,7 +16,7 @@ function minutesAsleep(node) {
 }
 
 export async function GET() {
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REFRESH_TOKEN) return json(503, { error: 'not configured' }, 60);
+  if (!configured()) return json(503, { error: 'not configured' }, 60);
   try {
     const token = await accessToken();
     // Look back two weeks; if nothing ended today (tracker not worn / not synced), fall back to the

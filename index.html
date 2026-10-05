@@ -114,6 +114,17 @@ dialog p{font-size:14px;color:var(--muted);margin-top:8px}
 
 .read{align-self:flex-start;font-size:12px;color:var(--muted);margin:4px 0 0 6px;min-height:16px;opacity:0;transition:opacity .5s}
 .read.on{opacity:1}
+/* Focus: iMessage's "notifications silenced" line, shown while Soneesh is in a calendar event */
+.focus{align-self:flex-start;display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin:2px 0 0 6px;opacity:0;transition:opacity .5s}
+.focus.on{opacity:1}
+.focus svg{width:12px;height:12px;color:#5e5ce6;flex:none}
+/* Invisible ink: text hidden under drifting particles until tapped */
+.ink:not(.seen){color:transparent}
+.ink:not(.seen) a{color:transparent;text-decoration-color:transparent;pointer-events:none}
+.ink{transition:color .6s}
+.ink canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:inherit;pointer-events:none;transition:opacity .7s}
+.ink.seen canvas{opacity:0}
+.ink:focus-visible{outline:2px solid var(--out);outline-offset:2px}
 .meta{align-self:flex-end;text-align:right;font-size:12px;color:var(--muted);margin-top:3px;min-height:16px}
 .meta.err{color:var(--err)}
 .meta button{all:unset;cursor:pointer;text-decoration:underline}
@@ -199,8 +210,10 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   </button>
   <div class="b in" data-id="hi">Hi <span class="wave">👋</span> I'm Soneesh <span class="say">(so niche)</span></div>
   <div class="b in" data-id="roles">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, and <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>. I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
-  <div class="b in last" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span></span></div>
+  <div class="b in ink" role="button" tabindex="0" aria-label="Hidden message. Tap to reveal.">What I'm building next: <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">Capsule Space Labs</a> &amp; <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">Boston Square Ventures</a></div>
+  <div class="b in last" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span></span><span id="steps" hidden> Steps today: <span id="stepN"></span>.</span></div>
   <div class="read" id="read" aria-hidden="true"></div>
+  <div class="focus" id="focus" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Soneesh has notifications silenced</div>
   <div class="hint" id="hint">Tap a message to react</div>
   <div id="log" style="display:contents"></div>
   <div id="ctas"><button class="cta" id="reply" type="button">Text back</button><i></i><button class="cta" id="bookBtn" type="button">Book a time</button></div>
@@ -270,7 +283,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     if(!d||!(d.minutes>0))return;
     var h=Math.floor(d.minutes/60),m=Math.round(d.minutes%60);
     var dur=(h?h+'h ':'')+m+'m';
-    if(d.today||!d.date){document.getElementById('slept').textContent=dur}
+    if(d.today||!d.date){document.getElementById('slept').textContent=dur+'.'}
     else{
       // Tracker missed today: show the most recent night instead.
       var p=d.date.split('-'),day=new Date(Date.UTC(+p[0],+p[1]-1,+p[2],12));
@@ -281,6 +294,44 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     }
     document.getElementById('sleep').hidden=false;
   }).catch(function(){});
+  // Steps today, from /api/steps (same Fitbit source); hidden until there's a count.
+  fetch('/api/steps').then(function(r){return r.ok?r.json():null}).then(function(d){
+    if(!d||!(d.steps>0))return;
+    document.getElementById('stepN').textContent=d.steps.toLocaleString('en-US');
+    document.getElementById('steps').hidden=false;
+  }).catch(function(){});
+
+  // Focus: /api/status says whether Soneesh is in a calendar event right now (a boolean, nothing more).
+  var focusEl=document.getElementById('focus');
+  fetch('/api/status').then(function(r){return r.ok?r.json():null}).then(function(d){
+    if(d&&d.focus){focusEl.hidden=false;if(document.getElementById('read').classList.contains('on'))focusEl.classList.add('on')}
+  }).catch(function(){});
+
+  // Invisible ink: particles drift over the hidden text until someone taps it.
+  [].forEach.call(document.querySelectorAll('.ink'),function(b){
+    var cv=document.createElement('canvas'),cx=cv.getContext('2d'),dots=[],w=0,h=0,raf=0;cv.setAttribute('aria-hidden','true');b.appendChild(cv);
+    function size(){
+      var r=window.devicePixelRatio||1;w=b.offsetWidth;h=b.offsetHeight;if(!w||!h)return;
+      cv.width=w*r;cv.height=h*r;cx.setTransform(r,0,0,r,0,0);dots=[];
+      for(var i=0,n=Math.round(w*h/18);i<n;i++)dots.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*.7+.45,p:Math.random()*6.28});
+    }
+    function draw(){
+      if(!w)size();
+      cx.clearRect(0,0,w,h);cx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--fg');
+      dots.forEach(function(d){
+        if(!still){d.x+=d.vx;d.y+=d.vy;d.p+=.06;if(d.x<0||d.x>w)d.vx*=-1;if(d.y<0||d.y>h)d.vy*=-1}
+        cx.globalAlpha=.35+.45*Math.abs(Math.sin(d.p));cx.beginPath();cx.arc(d.x,d.y,d.r,0,6.283);cx.fill();
+      });
+      if(!b.classList.contains('seen')&&!still)raf=requestAnimationFrame(draw);
+    }
+    function open(){if(b.classList.contains('seen'))return;b.classList.add('seen');b.removeAttribute('role');b.removeAttribute('aria-label');b.removeAttribute('tabindex');
+      setTimeout(function(){cancelAnimationFrame(raf);cv.remove()},800)}
+    b.addEventListener('click',open);
+    b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
+    window.addEventListener('resize',function(){if(!b.classList.contains('seen')){size();if(still)draw()}});
+    b.inkStart=function(){size();draw()};
+  });
+
   // Contact card
   var card=document.getElementById('card');
   document.getElementById('head').onclick=function(){card.showModal()};
@@ -335,12 +386,12 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   document.addEventListener('click',function(e){if(picker&&!e.target.closest('#chat'))closePicker()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closePicker()});
 
-  function reveal(b){b.classList.add('show');requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
+  function reveal(b){b.classList.add('show');if(b.inkStart)b.inkStart();requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('on')})})}
   function typing(){var t=document.createElement('div');t.className='b in typing show on ghost';t.innerHTML='<i></i><i></i><i></i>';return t}
   function play(i){
     if(i>=bubbles.length){
       var rd=document.getElementById('read');rd.textContent='Read '+fmt.format(new Date());
-      setTimeout(function(){rd.classList.add('on')},still?0:500);
+      setTimeout(function(){rd.classList.add('on');if(!focusEl.hidden)focusEl.classList.add('on')},still?0:500);
       setTimeout(function(){ctas.classList.add('on');if(!Object.keys(mine).length)document.getElementById('hint').classList.add('on')},still?0:900);return}
     var b=bubbles[i];
     if(still||i===0){reveal(b);return setTimeout(function(){play(i+1)},still?0:350)}

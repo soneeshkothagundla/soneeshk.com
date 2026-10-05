@@ -410,7 +410,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closePicker()});
 
   // Visitor count: one row per browser in Supabase (site_visitors) via the visit() RPC.
-  // Automated browsers (navigator.webdriver) only read the count, so tests and bots don't inflate it.
+  // Browsers flagged as automated (navigator.webdriver) only read the count; not every bot sets that flag.
   var vid=null;
   try{vid=localStorage.getItem('visitorId');if(!vid){vid=window.crypto&&crypto.randomUUID?crypto.randomUUID():null;if(vid)localStorage.setItem('visitorId',vid)}}catch(e){vid=null}
   api('rpc/visit',{method:'POST',body:JSON.stringify({p_visitor:navigator.webdriver?null:vid})})

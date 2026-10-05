@@ -450,7 +450,8 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     .then(function(r){return r.ok?r.json():null}).then(function(d){
       if(!d||!d.total)return;
       var el=document.getElementById('visitors'),n=function(x){return Number(x).toLocaleString('en-US')};
-      el.textContent=d.you?'You’re visitor #'+n(d.you)+' of '+n(d.total)+'.':n(d.total)+(d.total==1?' visitor':' visitors')+' so far.';
+      el.textContent=(d.you?'You’re visitor #'+n(d.you)+' of '+n(d.total)+'.':n(d.total)+(d.total==1?' visitor':' visitors')+' so far.')
+        +(d.today?' '+n(d.today)+(d.today==1?' person':' people')+' stopped by today.':'');
       el.hidden=false;
     }).catch(function(){});
 

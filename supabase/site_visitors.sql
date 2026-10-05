@@ -10,7 +10,7 @@ create table if not exists public.site_visitors (
 alter table public.site_visitors enable row level security;
 revoke all on public.site_visitors from anon, authenticated;
 
--- Records a visit (pass null to just read) and returns the total plus this visitor's number.
+-- Records a visit (pass null to just read) and returns the total, this visitor's number, and today's (ET) visitors.
 -- Tracking started 2026-10-05; `baseline` is an estimate of visitors before that, from engagement:
 -- 93 tapbacks (40 on the busiest bubble, and one per visitor per bubble, so >=40 reactors; ~60 at
 -- ~1.5 reactions each) and 53 "Text back" messages. Half interacting gives ~120; set generously to 250.
@@ -25,7 +25,10 @@ begin
   end if;
   return json_build_object(
     'total', baseline + (select count(*) from site_visitors),
-    'you',   case when my_id is null then null else baseline + (select count(*) from site_visitors where id <= my_id) end
+    'you',   case when my_id is null then null else baseline + (select count(*) from site_visitors where id <= my_id) end,
+    -- Distinct visitors seen since midnight Eastern (last_seen moves on every visit).
+    'today', (select count(*) from site_visitors
+              where last_seen >= date_trunc('day', now() at time zone 'America/New_York') at time zone 'America/New_York')
   );
 end;
 $$;

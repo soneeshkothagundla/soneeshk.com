@@ -25,6 +25,6 @@ export async function GET() {
     return json(200, { steps, date: today }, 60, 60);
   } catch (err) {
     console.error(err);
-    return json(502, { error: 'unavailable' }, 120);
+    return json(502, { error: 'unavailable' }, 30, 0);
   }
 }

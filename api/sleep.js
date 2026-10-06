@@ -39,6 +39,6 @@ export async function GET() {
     return json(200, { minutes: date ? byDate[date] : 0, date, today: date === todayDate });
   } catch (err) {
     console.error(err);
-    return json(502, { error: 'unavailable' }, 120);
+    return json(502, { error: 'unavailable' }, 30, 0);
   }
 }

@@ -1,5 +1,5 @@
 // GET /api/steps — Soneesh's step count so far today (local midnight to now), from the Google Health
-// API (Fitbit) daily rollup. Cached at the edge for 15 minutes.
+// API (Fitbit) daily rollup. Cached for a minute so the page's live counter follows each Fitbit sync.
 import { configured, json, localDate, accessToken, HEALTH } from './_lib/health.js';
 
 const civil = (ymd) => {
@@ -22,7 +22,7 @@ export async function GET() {
     if (!r.ok) throw new Error(`health ${r.status}: ${await r.text()}`);
     const { rollupDataPoints = [] } = await r.json();
     const steps = rollupDataPoints.reduce((n, p) => n + Number(p.steps?.countSum || 0), 0);
-    return json(200, { steps, date: today }, 900);
+    return json(200, { steps, date: today }, 60, 60);
   } catch (err) {
     console.error(err);
     return json(502, { error: 'unavailable' }, 120);

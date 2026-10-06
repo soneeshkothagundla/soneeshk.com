@@ -135,6 +135,9 @@ dialog p{font-size:14px;color:var(--muted);margin-top:8px}
 .out+.out{margin-top:3px}
 .say{opacity:.55}
 .src{opacity:.55;font-size:.82em}
+#stepN{font-variant-numeric:tabular-nums;display:inline-block}
+#stepN.bump{animation:bump .6s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes bump{40%{transform:scale(1.12)}}
 .wave{display:inline-block;transform-origin:70% 70%}
 .on .wave{animation:wave 2s .3s ease-in-out 1}
 @keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(14deg)}20%,40%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
@@ -355,11 +358,26 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     document.getElementById('sleep').hidden=false;
   }).catch(function(){});
   // Steps today, from /api/steps (same Fitbit source); hidden until there's a count.
-  fetch('/api/steps').then(function(r){return r.ok?r.json():null}).then(function(d){
-    if(!d||!(d.steps>0))return;
-    document.getElementById('stepN').textContent=d.steps.toLocaleString('en-US');
-    document.getElementById('steps').hidden=false;
-  }).catch(function(){});
+  // Re-checked every minute while the tab is visible; new steps count up so you can watch it move.
+  // (It moves whenever the Fitbit app syncs to Google, so it lags the watch by a few minutes.)
+  var stepEl=document.getElementById('stepN'),stepShown=0;
+  function showSteps(n){
+    var from=stepShown;stepShown=n;
+    if(still||!from||n<=from){stepEl.textContent=n.toLocaleString('en-US');return}
+    stepEl.classList.remove('bump');void stepEl.offsetWidth;stepEl.classList.add('bump');
+    var t0=performance.now();
+    (function f(t){var k=Math.min((t-t0)/1200,1),e=1-Math.pow(1-k,3);
+      stepEl.textContent=Math.round(from+(n-from)*e).toLocaleString('en-US');if(k<1)requestAnimationFrame(f)})(t0);
+  }
+  function loadSteps(){
+    fetch('/api/steps').then(function(r){return r.ok?r.json():null}).then(function(d){
+      if(!d||!(d.steps>0))return;
+      showSteps(d.steps);document.getElementById('steps').hidden=false;
+    }).catch(function(){});
+  }
+  loadSteps();
+  setInterval(function(){if(!document.hidden)loadSteps()},60000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)loadSteps()});
 
   // Focus: /api/status says whether Soneesh is in a calendar event right now (a boolean, nothing more).
   var focusEl=document.getElementById('focus');

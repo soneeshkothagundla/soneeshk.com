@@ -5,10 +5,10 @@ export const HEALTH = 'https://health.googleapis.com/v4/users/me/dataTypes';
 
 export const configured = () => Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET && GOOGLE_REFRESH_TOKEN);
 
-export const json = (status, body, maxAge = 1800) =>
+export const json = (status, body, maxAge = 1800, swr = 3600) =>
   Response.json(body, {
     status,
-    headers: { 'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=3600` },
+    headers: { 'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=${swr}` },
   });
 
 // YYYY-MM-DD of an instant in TZ.

@@ -252,7 +252,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="b in" data-id="hi">Hi <a class="hid" href="https://wisprflow.ai/r?SONEESH1" target="_blank" rel="noopener sponsored" aria-label="Wispr Flow"><span class="wave">👋</span></a> I'm Soneesh <a class="hid" href="https://thesurgeonsoneeshshow.buzzsprout.com/2511358" target="_blank" rel="noopener" aria-label="The Surgeon Soneesh Show podcast"><span class="say">(so niche)</span></a></div>
   <div class="b in" data-id="roles">I'm a <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">founder</a>, <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">investor</a>, and <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener">creator</a>. I'm also an <a href="https://www.barnesandnoble.com/w/fasten-your-seatbelt-soneesh-kothagundla/1149310655?ean=9798993879529" target="_blank" rel="noopener">author</a> and <a href="https://scholar.google.com/citations?user=pYouEJ8AAAAJ&amp;hl=en" target="_blank" rel="noopener">researcher</a>.</div>
   <div class="b in ink" role="button" tabindex="0" aria-label="Hidden message. Tap to reveal.">What I'm building next: <a href="https://www.capsulelabs.space" target="_blank" rel="noopener">Capsule Space Labs</a> &amp; <a href="https://bostonsquareventures.com" target="_blank" rel="noopener">Boston Square Ventures</a></div>
-  <div class="b in" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span> <span class="src">(updated in real time with Google Fitbit)</span></span><span id="steps" hidden> Steps today: <span id="stepN"></span>.</span></div>
+  <div class="b in" data-id="now">It's <span id="clock" style="white-space:nowrap">now</span> in Cambridge.<span id="sleep" hidden> <span id="sleepLead">The amount of sleep I got today:</span> <span id="slept" style="white-space:nowrap"></span></span><span id="steps" hidden> Steps today: <span id="stepN"></span>.</span><span id="fitSrc" hidden> <span class="src">(updated in real time with Google Fitbit)</span></span></div>
   <div class="b in last poll" id="poll"><div class="pq">On a scale of 1–10, how much do you like this personal website?</div><div class="pbars" role="group" aria-label="Vote from 1 to 10"><button type="button" data-s="1" aria-label="Vote 1"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">1</span></button><button type="button" data-s="2" aria-label="Vote 2"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">2</span></button><button type="button" data-s="3" aria-label="Vote 3"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">3</span></button><button type="button" data-s="4" aria-label="Vote 4"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">4</span></button><button type="button" data-s="5" aria-label="Vote 5"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">5</span></button><button type="button" data-s="6" aria-label="Vote 6"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">6</span></button><button type="button" data-s="7" aria-label="Vote 7"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">7</span></button><button type="button" data-s="8" aria-label="Vote 8"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">8</span></button><button type="button" data-s="9" aria-label="Vote 9"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">9</span></button><button type="button" data-s="10" aria-label="Vote 10"><b class="pc">0</b><span class="pb"><i></i></span><span class="pn">10</span></button></div><div class="pm" id="pollMeta" aria-live="polite">Tap a number to vote</div></div>
   <div class="read" id="read" aria-hidden="true"></div>
   <div class="focus" id="focus" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Soneesh has notifications silenced</div>
@@ -356,6 +356,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
       document.getElementById('slept').textContent=dur+' of sleep.';
     }
     document.getElementById('sleep').hidden=false;
+    document.getElementById('fitSrc').hidden=false;
   }).catch(function(){});
   // Steps today, from /api/steps (same Fitbit source); hidden until there's a count.
   // Re-checked every minute while the tab is visible; new steps count up so you can watch it move.
@@ -372,7 +373,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   function loadSteps(){
     fetch('/api/steps').then(function(r){return r.ok?r.json():null}).then(function(d){
       if(!d||!(d.steps>0))return;
-      showSteps(d.steps);document.getElementById('steps').hidden=false;
+      showSteps(d.steps);document.getElementById('steps').hidden=false;document.getElementById('fitSrc').hidden=false;
     }).catch(function(){});
   }
   loadSteps();

@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&display=swap" rel="stylesheet">
-<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;if(localStorage.getItem('green'))document.documentElement.classList.add('green')}catch(e){}</script>
 <style>
 :root{--bg:#fafaf9;--fg:#0a0a0a;--muted:#8a8a87;--in:#e9e9eb;--out:#0a84ff;--field:#fff;--edge:#dcdcd8;--err:#e5484d}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628;--field:#161617;--edge:#2c2c2e}}
@@ -529,15 +529,25 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
     else if(s===1)once('p1','Noted. \ud83d\ude10 Text back and tell me what to fix.');
   }
 
-  // Konami code: confetti + green bubbles (enter it again to switch back).
+  // Konami code: confetti + green bubbles, remembered across visits (enter it again to switch back).
+  // Keyboard: arrows then B A. Phone: swipe up up down down left right left right, then tap twice.
   var KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'],kpos=0;
-  document.addEventListener('keydown',function(e){
-    var k=e.key.length===1?e.key.toLowerCase():e.key;
+  function konamiStep(k){
     kpos=k===KONAMI[kpos]?kpos+1:(k===KONAMI[0]?1:0);
     if(kpos<KONAMI.length)return;kpos=0;
     var on=root.classList.toggle('green');confetti();
+    try{on?localStorage.setItem('green','1'):localStorage.removeItem('green')}catch(e){}
     if(on)once('konami','\u2191\u2191\u2193\u2193\u2190\u2192\u2190\u2192 B A. A person of culture. Green bubbles unlocked \ud83d\udfe2');
-  });
+  }
+  document.addEventListener('keydown',function(e){konamiStep(e.key.length===1?e.key.toLowerCase():e.key)});
+  var tx=0,ty=0;
+  document.addEventListener('touchstart',function(e){var t=e.touches[0];tx=t.clientX;ty=t.clientY},{passive:true});
+  document.addEventListener('touchend',function(e){
+    var t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty,ax=Math.abs(dx),ay=Math.abs(dy);
+    if(ax<12&&ay<12)return konamiStep(kpos===8?'b':kpos===9?'a':'tap'); // taps stand in for B, A
+    if(Math.max(ax,ay)<40)return;
+    konamiStep(ax>ay?(dx>0?'ArrowRight':'ArrowLeft'):(dy>0?'ArrowDown':'ArrowUp'));
+  },{passive:true});
 
   // Hold the SK avatar for 2 seconds: the contact card opens flipped to a hidden back.
   var head=document.getElementById('head'),holdT=null,held=false;

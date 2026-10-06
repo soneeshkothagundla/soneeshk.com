@@ -22,7 +22,13 @@ export async function GET() {
     if (!r.ok) throw new Error(`health ${r.status}: ${await r.text()}`);
     const { rollupDataPoints = [] } = await r.json();
     const steps = rollupDataPoints.reduce((n, p) => n + Number(p.steps?.countSum || 0), 0);
-    return json(200, { steps, date: today }, 60, 60);
+    // When the newest raw step sample ends (the list is newest-first): i.e. the last Fitbit -> Google sync.
+    let asOf = null;
+    try {
+      const q = await fetch(`${HEALTH}/steps/dataPoints?pageSize=1`, { headers: { Authorization: `Bearer ${token}` } });
+      if (q.ok) asOf = (await q.json()).dataPoints?.[0]?.steps?.interval?.endTime || null;
+    } catch { /* optional */ }
+    return json(200, { steps, date: today, asOf }, 60, 60);
   } catch (err) {
     console.error(err);
     return json(502, { error: 'unavailable' }, 30, 0);

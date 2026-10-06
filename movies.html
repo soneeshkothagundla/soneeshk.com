@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Movies · Soneesh</title>
+<meta name="description" content="Soneesh's favorite movies.">
+<link rel="canonical" href="https://soneeshk.com/movies">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#fafaf9;--fg:#0a0a0a;--muted:#8a8a87;--in:#e9e9eb;--out:#0a84ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628}}
+:root[data-theme=dark]{--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628}
+*{margin:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.4 Figtree,"Google Sans",system-ui,sans-serif;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;
+  padding:calc(48px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:640px;margin:0 auto}
+.back{color:var(--out);text-decoration:none;font-size:15px}
+.back:hover{text-decoration:underline}
+h1{font-weight:500;font-size:clamp(30px,6vw,40px);letter-spacing:-.02em;margin:18px 0 6px}
+.lede{color:var(--muted);font-size:15px}
+h2{font-weight:500;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:36px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 16px}
+@media (max-width:480px){.grid{grid-template-columns:repeat(2,1fr)}}
+.poster{position:relative;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--in);box-shadow:0 10px 30px rgba(0,0,0,.18);
+  transition:transform .3s cubic-bezier(.2,.9,.3,1.2)}
+.movie:hover .poster{transform:translateY(-3px) rotate(-.6deg)}
+.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* "Any Nani movie": posters cross-fade */
+.poster.cycle img{opacity:0;transition:opacity .9s}
+.poster.cycle img.on{opacity:1}
+.t{font-weight:500;font-size:15px;margin-top:10px;line-height:1.3}
+.m{font-size:12px;color:var(--muted);margin-top:2px}
+.now{font-size:12px;color:var(--muted);margin-top:2px;min-height:1.4em;transition:opacity .4s}
+footer{margin-top:44px;font-size:11px;color:var(--muted);opacity:.8}
+@media (prefers-reduced-motion:reduce){.poster,.poster.cycle img{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">&larr; Soneesh</a>
+  <h1>Movies</h1>
+  <p class="lede">The ones I'd watch again tonight.</p>
+
+  <h2>Telugu</h2>
+  <div class="grid">
+    <div class="movie">
+      <div class="poster"><img src="/img/movies/pushpa-2.jpg" alt="Pushpa 2: The Rule poster" loading="lazy"></div>
+      <div class="t">Pushpa 2: The Rule</div>
+      <div class="m">2024 · Action Drama</div>
+    </div>
+    <div class="movie">
+      <div class="poster"><img src="/img/movies/happy.jpg" alt="Happy poster" style="object-position:70% 50%" loading="lazy"></div>
+      <div class="t">Happy</div>
+      <div class="m">2006 · Romantic Comedy</div>
+    </div>
+    <div class="movie">
+      <div class="poster cycle" id="nani">
+        <img class="on" src="/img/movies/jersey.jpg" alt="Jersey poster" data-name="Jersey (2019)">
+        <img src="/img/movies/eega.jpg" alt="Eega poster" data-name="Eega (2012)" loading="lazy">
+        <img src="/img/movies/hi-nanna.jpg" alt="Hi Nanna poster" data-name="Hi Nanna (2023)" loading="lazy">
+        <img src="/img/movies/shyam-singha-roy.jpg" alt="Shyam Singha Roy poster" data-name="Shyam Singha Roy (2021)" loading="lazy">
+        <img src="/img/movies/saripodhaa-sanivaaram.jpg" alt="Saripodhaa Sanivaaram poster" data-name="Saripodhaa Sanivaaram (2024)" loading="lazy">
+      </div>
+      <div class="t">Any Nani movie</div>
+      <div class="now" id="naniNow" aria-live="off">Jersey (2019)</div>
+    </div>
+  </div>
+
+  <footer>Posters via Wikipedia, for identification. All rights belong to their owners.</footer>
+</main>
+<script>
+// "Any Nani movie" flips through a few of his films.
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var imgs=[].slice.call(document.querySelectorAll('#nani img')),now=document.getElementById('naniNow'),i=0;
+  setInterval(function(){
+    if(document.hidden)return;
+    imgs[i].classList.remove('on');i=(i+1)%imgs.length;imgs[i].classList.add('on');
+    now.style.opacity=0;setTimeout(function(){now.textContent=imgs[i].dataset.name;now.style.opacity=1},300);
+  },2600);
+})();
+</script>
+</body>
+</html>

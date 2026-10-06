@@ -36,12 +36,13 @@ body{background:var(--bg);color:var(--fg);font:400 clamp(17px,2vw,19px)/1.4 Figt
   letter-spacing:-.005em;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:center;
   padding:calc(56px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
   transition:background .4s,color .4s;-webkit-font-smoothing:antialiased}
-main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px}
+main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:3px;position:relative}
 
 .b{max-width:85%;padding:9px 14px;border-radius:20px;word-wrap:break-word;width:fit-content;
   opacity:0;transform:translateY(8px) scale(.96);transform-origin:bottom left;transition:opacity .35s,transform .45s cubic-bezier(.2,.9,.3,1.2)}
 .b.in:not(.show){visibility:hidden}
-.ghost{position:absolute;top:0;left:0;visibility:visible}
+/* Typing dots sit on top of the thread where the next (still transparent) bubble will appear */
+.b.in.ghost{position:absolute;visibility:visible;margin:0}
 .b.on{opacity:1;transform:none}
 .in{background:var(--in);color:var(--fg);align-self:flex-start;border-bottom-left-radius:6px}
 .in+.in{border-top-left-radius:6px}
@@ -611,7 +612,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
       setTimeout(function(){ctas.classList.add('on');if(!Object.keys(mine).length)document.getElementById('hint').classList.add('on')},still?0:900);return}
     var b=bubbles[i];
     if(still||i===0){reveal(b);return setTimeout(function(){play(i+1)},still?0:350)}
-    var t=typing();b.appendChild(t);
+    var t=typing();t.style.top=b.offsetTop+'px';t.style.left=b.offsetLeft+'px';chat.appendChild(t);
     setTimeout(function(){t.remove();reveal(b);setTimeout(function(){play(i+1)},250)},500+Math.min(b.textContent.length*12,700));
   }
   setTimeout(function(){play(0)},still?0:300);

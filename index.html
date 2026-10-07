@@ -176,6 +176,7 @@ dialog .mov:hover{filter:brightness(.96)}
 #ctas{align-self:flex-start;display:flex;align-items:center;gap:6px;margin-top:8px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
 #ctas.on{opacity:1;visibility:visible}
 #ctas i{width:3px;height:3px;border-radius:50%;background:var(--muted);opacity:.6}
+a.cta{text-decoration:none;display:inline-flex;align-items:center}
 .cta{font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;padding:10px 2px;min-height:44px}
 .cta:hover{text-decoration:underline;text-underline-offset:3px}
 
@@ -261,7 +262,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="focus" id="focus" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Soneesh has notifications silenced</div>
   <div class="hint" id="hint">Tap a message to react</div>
   <div id="log" style="display:contents"></div>
-  <div id="ctas"><button class="cta" id="reply" type="button">Text back</button><i></i><button class="cta" id="bookBtn" type="button">Book a time</button></div>
+  <div id="ctas"><button class="cta" id="reply" type="button">Text back</button><i></i><button class="cta" id="bookBtn" type="button">Book a time</button><i></i><a class="cta" href="/donate">Donate</a></div>
   <section class="bk" id="bk" aria-label="Book a time">
     <div class="bk-h"><span><b>Book a time</b> &nbsp;10 min</span><button type="button" id="bkClose" aria-label="Close booking">Close</button></div>
     <div class="bk-msg" id="bkMsg">Checking Soneesh's calendar<span class="ld"><i></i><i></i><i></i></span></div>

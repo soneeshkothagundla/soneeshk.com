@@ -40,16 +40,11 @@ ol li{margin-top:6px}
 ol li::marker{color:var(--muted)}
 .check{margin-top:16px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--zelle) 10%,transparent);font-size:14px}
 .stripe{margin-top:28px}
-.amts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
-.amts button{height:46px;padding:0;border-radius:12px;background:var(--in);color:var(--fg);font-size:16px;font-weight:500}
-.amts button[aria-pressed=true]{background:var(--out);color:#fff}
-.custom{display:flex;align-items:center;margin-top:8px;height:46px;border-radius:12px;background:var(--in);padding:0 14px;font-size:16px}
-.custom input{all:unset;flex:1;margin-left:4px;font-size:16px;color:var(--fg)}
-.custom:focus-within{outline:2px solid var(--out);outline-offset:1px}
-.go{width:100%;box-sizing:border-box;margin-top:14px;background:var(--out)}
-.go[disabled]{opacity:.5;cursor:default}
-.err{margin-top:10px;font-size:14px;color:#e5484d;min-height:1.2em}
-.pm{margin-top:4px;font-size:12px;color:var(--muted);text-align:center}
+.cardsub{margin-top:8px;font-size:14px;color:var(--muted)}
+.go{display:grid;place-items:center;height:48px;margin-top:14px;border-radius:12px;background:var(--out);color:#fff;font-size:15px;font-weight:500;text-decoration:none;transition:filter .15s}
+.go:hover{filter:brightness(1.08)}
+.go:focus-visible{outline:2px solid var(--out);outline-offset:2px}
+.pm{margin-top:10px;font-size:12px;color:var(--muted);text-align:center}
 .thanks{margin-top:24px;padding:16px 18px;border-radius:16px;background:color-mix(in srgb,#30d158 14%,transparent);font-size:16px}
 .or{margin:26px 0 -8px;text-align:center;font-size:13px;color:var(--muted)}
 .fine{margin-top:22px;font-size:13px;color:var(--muted)}
@@ -67,12 +62,8 @@ ol li::marker{color:var(--muted)}
 
   <section class="card stripe" id="stripe" aria-labelledby="card-h" hidden>
     <div class="zh" id="card-h">Card, Apple Pay, or Google Pay</div>
-    <div class="amts" role="group" aria-label="Amount">
-      <button type="button" data-a="5" aria-pressed="false">$5</button><button type="button" data-a="10" aria-pressed="false">$10</button><button type="button" data-a="25" aria-pressed="true">$25</button><button type="button" data-a="50" aria-pressed="false">$50</button>
-    </div>
-    <label class="custom">$<input id="amt" inputmode="decimal" placeholder="Other amount" aria-label="Other amount in dollars" autocomplete="off"></label>
-    <button type="button" class="go" id="go">Give $25</button>
-    <p class="err" id="err" role="alert"></p>
+    <p class="cardsub">Pick any amount on the next page.</p>
+    <a class="go" id="go" href="#">Give with card</a>
     <p class="pm">Secure checkout by Stripe. Your card details never touch this site.</p>
   </section>
   <p class="or" id="or" hidden>or, with no fees</p>
@@ -108,34 +99,19 @@ ol li::marker{color:var(--muted)}
   out.onclick=function(){if(!shown)show()};
 })();
 
-// Stripe: the card option appears only once /api/donate says a key is configured.
+// Stripe Payment Link: donors choose the amount on Stripe's page; Stripe pays out to his bank.
+// LIVE is empty until the account is verified; the sandbox link only shows with ?stripe=test.
 (function(){
-  var box=document.getElementById('stripe'),or=document.getElementById('or'),go=document.getElementById('go'),err=document.getElementById('err'),
-      amt=document.getElementById('amt'),chips=[].slice.call(document.querySelectorAll('.amts button')),amount=25,
-      thanks=document.getElementById('thanks'),q=new URLSearchParams(location.search).get('thanks');
-  function money(n){return '$'+(n%1?n.toFixed(2):n.toLocaleString('en-US'))}
-  function set(n){amount=n;go.textContent=n>=1?'Give '+money(n):'Give';go.disabled=!(n>=1&&n<=5000)}
-  chips.forEach(function(c){c.onclick=function(){chips.forEach(function(x){x.setAttribute('aria-pressed',String(x===c))});amt.value='';err.textContent='';set(+c.dataset.a)}});
-  amt.oninput=function(){
-    amt.value=amt.value.replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1').replace(/(\.\d{2}).+/,'$1');
-    chips.forEach(function(x){x.setAttribute('aria-pressed','false')});err.textContent='';
-    var n=parseFloat(amt.value);set(isFinite(n)?n:0);
-    if(n>5000)err.textContent='For more than $5,000, text me first.';
-  };
-  go.onclick=function(){
-    if(go.disabled)return;go.disabled=true;go.textContent='Opening checkout\u2026';err.textContent='';
-    fetch('/api/donate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:amount})})
-      .then(function(r){return r.json().then(function(d){if(!r.ok||!d.url)throw new Error(d.error||'');location.href=d.url})})
-      .catch(function(e){err.textContent=e.message||'Couldn\u2019t start checkout. Try again.';set(amount)});
-  };
-  if(q){
-    thanks.hidden=false;thanks.textContent='Thank you!';
-    fetch('/api/donate?session='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(d){
-      if(d.paid)thanks.textContent='Thank you for the '+money(d.amount)+'! It means a lot.';
-    }).catch(function(){});
+  var LIVE='', TEST='https://buy.stripe.com/test_cNi28s4sq6dYct69yWfUQ00';
+  var q=new URLSearchParams(location.search),link=LIVE||(q.get('stripe')==='test'?TEST:'');
+  if(link){
+    document.getElementById('go').href=link;
+    document.getElementById('stripe').hidden=false;document.getElementById('or').hidden=false;
+  }
+  if(q.has('thanks')){
+    var t=document.getElementById('thanks');t.hidden=false;t.textContent='Thank you so much! It means a lot.';
     history.replaceState(null,'','/donate');
   }
-  fetch('/api/donate').then(function(r){return r.json()}).then(function(d){if(d.enabled){box.hidden=false;or.hidden=false}}).catch(function(){});
 })();
 </script>
 </body>

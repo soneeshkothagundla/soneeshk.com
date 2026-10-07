@@ -123,10 +123,16 @@ ol li::marker{color:var(--muted)}
 })();
 
 // Stripe Payment Links (no API key on the site). One time: donor picks the amount. Monthly: $5/$10/$25
-// subscriptions, cancelled by the donor in Stripe's customer portal. LIVE stays empty until the
-// personal Stripe account is verified; the sandbox links only show with ?stripe=test.
+// subscriptions, cancelled by the donor in Stripe's customer portal. ?stripe=test swaps in the
+// sandbox links for testing.
 (function(){
-  var LIVE=null;
+  var LIVE={
+    once:'https://buy.stripe.com/dRm28qdv43TMgkP19T5ZC00',
+    m5:'https://buy.stripe.com/14A7sKdv42PI1pV8Cl5ZC01',
+    m10:'https://buy.stripe.com/14A8wO9eO0HA3y319T5ZC02',
+    m25:'https://buy.stripe.com/bJeeVcez89e63y319T5ZC03',
+    portal:'https://billing.stripe.com/p/login/dRm28qdv43TMgkP19T5ZC00'
+  };
   var TEST={
     once:'https://donate.stripe.com/test_aFa6oJ8WZ1Gudmpdlp2kw00',
     m5:'https://buy.stripe.com/test_3cIaEZa13bh44PT9592kw01',
@@ -134,7 +140,7 @@ ol li::marker{color:var(--muted)}
     m25:'https://buy.stripe.com/test_3cI14pgprdpceqt9592kw03',
     portal:'https://billing.stripe.com/p/login/test_aFa6oJ8WZ1Gudmpdlp2kw00'
   };
-  var q=new URLSearchParams(location.search),links=LIVE||(q.get('stripe')==='test'?TEST:null);
+  var q=new URLSearchParams(location.search),links=q.get('stripe')==='test'?TEST:LIVE;
   if(links){
     document.querySelectorAll('[data-link]').forEach(function(a){a.href=links[a.dataset.link]});
     document.getElementById('stripe').hidden=false;document.getElementById('or').hidden=false;

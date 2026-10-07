@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Support · Soneesh</title>
+<meta name="description" content="Support Soneesh's work.">
+<link rel="canonical" href="https://soneeshk.com/donate">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#fafaf9;--fg:#0a0a0a;--muted:#8a8a87;--in:#e9e9eb;--out:#0a84ff;--card:#fff;--edge:#e4e4e1;--zelle:#6d1ed4}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628;--card:#161617;--edge:#2c2c2e;--zelle:#a46bff}}
+:root[data-theme=dark]{--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628;--card:#161617;--edge:#2c2c2e;--zelle:#a46bff}
+*{margin:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.45 Figtree,"Google Sans",system-ui,sans-serif;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;
+  padding:calc(48px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:440px;margin:0 auto}
+.back{color:var(--out);text-decoration:none;font-size:15px}
+.back:hover{text-decoration:underline}
+h1{font-weight:500;font-size:clamp(30px,6vw,40px);letter-spacing:-.02em;margin:18px 0 8px}
+.lede{color:var(--muted);font-size:16px}
+.card{margin-top:28px;background:var(--card);border:1px solid var(--edge);border-radius:20px;padding:22px}
+.zh{display:flex;align-items:center;gap:10px;font-weight:500}
+.zh b{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--zelle);color:#fff;font-size:17px}
+.zh span{color:var(--muted);font-weight:400;font-size:13px;margin-left:auto}
+.num{margin-top:18px;display:flex;gap:8px}
+.num output{flex:1;display:flex;align-items:center;padding:0 14px;height:48px;border-radius:12px;background:var(--in);font-size:20px;font-weight:500;
+  letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.num output.hid{color:var(--muted);font-size:16px;font-weight:400;letter-spacing:0}
+button{all:unset;cursor:pointer;display:grid;place-items:center;height:48px;padding:0 18px;border-radius:12px;background:var(--zelle);color:#fff;font-size:15px;font-weight:500;
+  -webkit-tap-highlight-color:transparent;transition:filter .15s}
+button:hover{filter:brightness(1.08)}
+button:focus-visible{outline:2px solid var(--out);outline-offset:2px}
+ol{margin:18px 0 0;padding-left:20px;color:var(--fg);font-size:15px}
+ol li{margin-top:6px}
+ol li::marker{color:var(--muted)}
+.check{margin-top:16px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--zelle) 10%,transparent);font-size:14px}
+.fine{margin-top:22px;font-size:13px;color:var(--muted)}
+.fine a{color:var(--out);text-decoration:none}
+.fine a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">&larr; Soneesh</a>
+  <h1>Support my work</h1>
+  <p class="lede">If something I've built, written, or said helped you, you can chip in. Any amount means a lot. Thank you.</p>
+
+  <section class="card" aria-labelledby="zelle-h">
+    <div class="zh" id="zelle-h"><b aria-hidden="true">Z</b>Send with Zelle<span>no fees</span></div>
+    <div class="num">
+      <output id="zNum" class="hid">Tap to show number</output>
+      <button type="button" id="zBtn">Show</button>
+    </div>
+    <ol>
+      <li>Open your bank's app and go to <strong>Zelle</strong> (it's built into most US banking apps).</li>
+      <li>Send to the number above, any amount you like.</li>
+      <li>Add a note so I know it was you.</li>
+    </ol>
+    <p class="check">Before you hit send, make sure the recipient shows as <strong>Soneesh Kothagundla</strong>.</p>
+  </section>
+
+  <p class="fine">This is a personal gift to me, not a donation to a charity, so it isn't tax-deductible. Questions? <a href="/">Text me</a>.</p>
+</main>
+<script>
+// The number is assembled here (not in the HTML) and only shown on tap, to keep it away from scrapers.
+(function(){
+  var p=['470','981','7883'],out=document.getElementById('zNum'),btn=document.getElementById('zBtn'),shown=false;
+  function show(){shown=true;out.textContent=p.join('-');out.classList.remove('hid');btn.textContent='Copy'}
+  function copied(){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy'},1600)}
+  btn.onclick=function(){
+    if(!shown)return show();
+    var raw=p.join('');
+    if(navigator.clipboard)navigator.clipboard.writeText(raw).then(copied,function(){});
+    else{var r=document.createRange();r.selectNodeContents(out);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+  };
+  out.onclick=function(){if(!shown)show()};
+})();
+</script>
+</body>
+</html>

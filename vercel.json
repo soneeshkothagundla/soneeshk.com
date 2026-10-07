@@ -7,6 +7,10 @@
     {
       "source": "/movies",
       "destination": "/movies.html"
+    },
+    {
+      "source": "/donate",
+      "destination": "/donate.html"
     }
   ],
   "headers": [

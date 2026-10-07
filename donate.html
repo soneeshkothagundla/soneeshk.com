@@ -40,6 +40,14 @@ ol li{margin-top:6px}
 ol li::marker{color:var(--muted)}
 .check{margin-top:16px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--zelle) 10%,transparent);font-size:14px}
 .stripe{margin-top:28px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:16px;padding:4px;border-radius:12px;background:var(--in)}
+.seg button{height:36px;padding:0;border-radius:9px;background:none;color:var(--muted);font-size:14px;font-weight:500}
+.seg button[aria-selected=true]{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.tier small{font-size:12px;font-weight:400;opacity:.8;margin-left:1px}
+.go.tier{display:flex;align-items:center;justify-content:center;gap:1px;margin-top:0}
+.pm a{color:var(--out);text-decoration:none}
+.pm a:hover{text-decoration:underline}
 .cardsub{margin-top:8px;font-size:14px;color:var(--muted)}
 .go{display:grid;place-items:center;height:48px;margin-top:14px;border-radius:12px;background:var(--out);color:#fff;font-size:15px;font-weight:500;text-decoration:none;transition:filter .15s}
 .go:hover{filter:brightness(1.08)}
@@ -62,8 +70,23 @@ ol li::marker{color:var(--muted)}
 
   <section class="card stripe" id="stripe" aria-labelledby="card-h" hidden>
     <div class="zh" id="card-h">Card, Apple Pay, or Google Pay</div>
-    <p class="cardsub">Pick any amount on the next page.</p>
-    <a class="go" id="go" href="#">Give with card</a>
+    <div class="seg" role="tablist" aria-label="How often">
+      <button type="button" role="tab" aria-selected="true" data-mode="once">One time</button>
+      <button type="button" role="tab" aria-selected="false" data-mode="monthly">Monthly</button>
+    </div>
+    <div id="once">
+      <p class="cardsub">Pick any amount on the next page.</p>
+      <a class="go" data-link="once" href="#">Give with card</a>
+    </div>
+    <div id="monthly" hidden>
+      <p class="cardsub">Cancel anytime.</p>
+      <div class="tiers">
+        <a class="go tier" data-link="m5" href="#">$5<small>/mo</small></a>
+        <a class="go tier" data-link="m10" href="#">$10<small>/mo</small></a>
+        <a class="go tier" data-link="m25" href="#">$25<small>/mo</small></a>
+      </div>
+      <p class="pm"><a data-link="portal" href="#">Manage or cancel your monthly support</a></p>
+    </div>
     <p class="pm">Secure checkout by Stripe. Your card details never touch this site.</p>
   </section>
   <p class="or" id="or" hidden>or, with no fees</p>
@@ -99,15 +122,29 @@ ol li::marker{color:var(--muted)}
   out.onclick=function(){if(!shown)show()};
 })();
 
-// Stripe Payment Link: donors choose the amount on Stripe's page; Stripe pays out to his bank.
-// LIVE is empty until the account is verified; the sandbox link only shows with ?stripe=test.
+// Stripe Payment Links (no API key on the site). One time: donor picks the amount. Monthly: $5/$10/$25
+// subscriptions, cancelled by the donor in Stripe's customer portal. LIVE stays empty until the
+// personal Stripe account is verified; the sandbox links only show with ?stripe=test.
 (function(){
-  var LIVE='', TEST='https://buy.stripe.com/test_cNi28s4sq6dYct69yWfUQ00';
-  var q=new URLSearchParams(location.search),link=LIVE||(q.get('stripe')==='test'?TEST:'');
-  if(link){
-    document.getElementById('go').href=link;
+  var LIVE=null;
+  var TEST={
+    once:'https://donate.stripe.com/test_aFa6oJ8WZ1Gudmpdlp2kw00',
+    m5:'https://buy.stripe.com/test_3cIaEZa13bh44PT9592kw01',
+    m10:'https://buy.stripe.com/test_3cIeVf0qt4SGbeh4OT2kw02',
+    m25:'https://buy.stripe.com/test_3cI14pgprdpceqt9592kw03',
+    portal:'https://billing.stripe.com/p/login/test_aFa6oJ8WZ1Gudmpdlp2kw00'
+  };
+  var q=new URLSearchParams(location.search),links=LIVE||(q.get('stripe')==='test'?TEST:null);
+  if(links){
+    document.querySelectorAll('[data-link]').forEach(function(a){a.href=links[a.dataset.link]});
     document.getElementById('stripe').hidden=false;document.getElementById('or').hidden=false;
   }
+  var tabs=[].slice.call(document.querySelectorAll('.seg button'));
+  tabs.forEach(function(t){t.onclick=function(){
+    tabs.forEach(function(x){x.setAttribute('aria-selected',String(x===t))});
+    document.getElementById('once').hidden=t.dataset.mode!=='once';
+    document.getElementById('monthly').hidden=t.dataset.mode!=='monthly';
+  }});
   if(q.has('thanks')){
     var t=document.getElementById('thanks');t.hidden=false;t.textContent='Thank you so much! It means a lot.';
     history.replaceState(null,'','/donate');

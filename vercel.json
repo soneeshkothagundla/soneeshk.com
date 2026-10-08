@@ -11,6 +11,10 @@
     {
       "source": "/donate",
       "destination": "/donate.html"
+    },
+    {
+      "source": "/archive",
+      "destination": "/archive.html"
     }
   ],
   "headers": [

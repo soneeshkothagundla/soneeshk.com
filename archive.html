@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Essays &amp; LinkedIn Archive · Soneesh</title>
+<meta name="description" content="Soneesh's recent LinkedIn posts, with reactions, comments, reposts, and impressions.">
+<link rel="canonical" href="https://soneeshk.com/archive">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#fafaf9;--fg:#0a0a0a;--muted:#8a8a87;--in:#e9e9eb;--out:#0a84ff;--card:#fff;--edge:#e4e4e1}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628;--card:#161617;--edge:#2c2c2e}}
+:root[data-theme=dark]{--bg:#0a0a0a;--fg:#f5f5f4;--muted:#71716e;--in:#262628;--card:#161617;--edge:#2c2c2e}
+*{margin:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.5 Figtree,"Google Sans",system-ui,sans-serif;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;
+  padding:calc(48px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:640px;margin:0 auto}
+.back{color:var(--out);text-decoration:none;font-size:15px}
+.back:hover{text-decoration:underline}
+h1{font-weight:500;font-size:clamp(30px,6vw,40px);letter-spacing:-.02em;margin:18px 0 6px;line-height:1.15}
+.lede{color:var(--muted);font-size:15px}
+.totals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:24px}
+.tot{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:12px 14px}
+.tot b{display:block;font-size:20px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tot span{font-size:12px;color:var(--muted)}
+@media (max-width:520px){.totals{grid-template-columns:repeat(2,1fr)}}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:32px 0 12px}
+.bar h2{font-weight:500;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sort{display:flex;gap:4px;padding:3px;border-radius:10px;background:var(--in)}
+.sort button{all:unset;cursor:pointer;font-size:13px;padding:5px 10px;border-radius:8px;color:var(--muted)}
+.sort button[aria-pressed=true]{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.sort button:focus-visible{outline:2px solid var(--out)}
+.post{background:var(--card);border:1px solid var(--edge);border-radius:18px;padding:18px 18px 14px;margin-top:12px}
+.meta{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}
+.meta a{color:var(--out);text-decoration:none;white-space:nowrap}
+.meta a:hover{text-decoration:underline}
+.shared{font-size:13px;color:var(--muted);margin-top:8px}
+.text{margin-top:8px;white-space:pre-line;font-size:16px;line-height:1.55;overflow-wrap:anywhere}
+.text.clip{max-height:9.4em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
+.more{all:unset;cursor:pointer;font-size:14px;color:var(--out);margin-top:4px}
+.poll{margin-top:10px;display:grid;gap:6px}
+.opt{position:relative;border-radius:10px;background:var(--in);padding:8px 12px;font-size:15px;overflow:hidden;display:flex;justify-content:space-between}
+.opt i{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--out) 22%,transparent)}
+.opt span{position:relative}
+.stats{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;padding-top:12px;border-top:1px solid var(--edge);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{color:var(--fg);font-weight:500}
+.top{display:inline-block;margin-left:6px;font-size:11px;padding:1px 7px;border-radius:999px;background:color-mix(in srgb,var(--out) 14%,transparent);color:var(--out)}
+footer{margin-top:36px;font-size:12px;color:var(--muted)}
+footer a{color:var(--out);text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">&larr; Soneesh</a>
+  <h1>Essays &amp; LinkedIn Archive</h1>
+  <p class="lede">Everything I've posted on LinkedIn in the last three months, with the numbers.</p>
+  <div class="totals" id="totals"></div>
+  <div class="bar">
+    <h2 id="count">Posts</h2>
+    <div class="sort" role="group" aria-label="Sort posts">
+      <button type="button" data-sort="new" aria-pressed="true">Newest</button>
+      <button type="button" data-sort="imp" aria-pressed="false">Most seen</button>
+      <button type="button" data-sort="eng" aria-pressed="false">Most engaged</button>
+    </div>
+  </div>
+  <div id="list"></div>
+  <footer>Numbers from LinkedIn as of <span id="asof"></span>. Full posts on <a href="https://www.linkedin.com/in/soneeshk/recent-activity/all/" target="_blank" rel="noopener">LinkedIn</a>.</footer>
+</main>
+<script type="application/json" id="data">
+{"asOf":"2026-10-07","posts":[
+{"id":"7512642632372707328","date":"2026-10-04T22:39:41Z","reactions":325,"comments":156,"reposts":0,"impressions":54565,"text":"Last Friday night at 2am during the Soulja Boy concert, Hadi and I were working at the Harvard Innovation Labs 3D-printing something.\n\nIntroducing Boston Square Ventures...\n\nBoston Square Ventures connects student founders with capital, compute, and a founder network, and we take you from square one all the way to your first raise.\n\nHere's what founders in Cohort 01 get:\n\n- $100K in compute credits (Azure, AWS, Supabase, and more)\n- Warm intros to top VCs for your first raise\n- Mentors including founders, operators, and investors\n- Weekly check-ins on what you shipped and what's blocking you\n- A Demo Day at the end of the cohort\n- A lifelong spot in the alumni network"},
+{"id":"7512584706673070081","date":"2026-10-04T18:49:31Z","reactions":11,"comments":1,"reposts":0,"impressions":2086,"sharedFrom":"Jose C.","text":"good meeting you goat, congratulations and good luck on Stan Launchpad!!"},
+{"id":"7509714929160163328","date":"2026-09-26T20:46:02Z","reactions":247,"comments":14,"reposts":1,"impressions":19152,"text":"Recently, I had the privilege of being interviewed by Olivia Zhang on her new series \"Liv & Learn.\"\n\nOlivia doesn't need an introduction, but here we go anyway: she is a Harvard senior who founded Cancer Kids First at just 14 and has grown it into a global movement of young people supporting pediatric cancer patients, and along the way she became the youngest 2026 Forbes 30 Under 30 Social Impact honoree, wrote the bestselling book \"YOUth: The Young Person's Guide to Starting a Nonprofit,\" and built an audience of over 200,000 followers who look to her for how to turn ambition into something real."},
+{"id":"7502588675235487744","date":"2026-09-07T04:48:51Z","reactions":238,"comments":24,"reposts":1,"impressions":21620,"text":"Here's my ode to Harvard Innovation Labs and a list of reasons to come to Harvard Innovation Labs.\n\nWorking spots in Boston is a common debate. Often times, you'll hear Lamont Library, Widener Library, Smith Center, Science Center, dorm room, etc which are amazing.\n\nBut in my opinion, Harvard Innovation Labs is the best working spot for social impact, entrepreneurship, and to change the world.\n\n- There is free sparkling water in these flavors: Raspberry, Watermelon, Lemon, Berry Cozy, and Citrus Picnic. Personally, Raspberry + Watermelon is my favorite."},
+{"id":"7501269516572688386","date":"2026-09-03T13:26:59Z","reactions":274,"comments":21,"reposts":2,"impressions":34108,"text":"Yesterday, was the first day of classes at Harvard and an INCREDIBLE day for Capsule Space Labs:\n\nAt Harvard:\n\n- I met Shayan Khan while walking around in the Harvard Yard. He is majoring in Astrophysics and does a lot of space stuff including having an Instagram with over 100K followers dedicated to astrophysics.\n\n- First day of classes went great. As of right now, I'll be concentrating in Human Developmental and Regenerative Biology (HDRB) with a Secondary in Global Health and Health Policy (GHHP). I'll also be taking a drug development class at MIT."},
+{"id":"7500229617895694336","date":"2026-08-31T00:00:00Z","reactions":264,"comments":34,"reposts":2,"impressions":35204,"text":"Farhan Khan, Khandakar Mahin, and I went on a side quest during Harvard University Orientation.\n\nWe cleaned up Harambe Park for Harvard University's Global Day of Service hosted by the Phillips Brooks House Association Inc..\n\nThrough the sweltering heat, fun conversations, and long journey to Harambe Park, we realized that this is what life is about: public service.\n\nWhile we cleaned up trash mainly, the broader theme of what we did is public service. On a real note, fundamentally, I think anything that we do (startups, research, nonprofits, advocacy, awareness, etc), should be in service of the world."},
+{"id":"7498613448201719808","date":"2026-08-27T00:00:00Z","reactions":323,"comments":36,"reposts":0,"impressions":33022,"text":"I just finished presenting Capsule Space Labs at Y-Combinator Fellows Demo Day and moved into Harvard University.\n\nThe demo went well, and all in all the event was a great way to end off the YC fellowship summer. We have some incredibly exciting things upcoming for Capsule Space Labs that I'll be announcing soon.\n\nShoutout to my YC summer fellow friends that you should all connect with: Madhavendra Thakur, Henrijs Dandzbergs, Kevin Jin, Nikola Jovićević, William Shiu, Rick Gaur, Ben Slivinski"},
+{"id":"7495561873824862208","date":"2026-08-18T00:00:00Z","reactions":565,"comments":130,"reposts":6,"impressions":56327,"text":"So many people have been asking me \"What are you building?\"\n\nAnd I realized I haven't made it public yet.\n\nSo I am now.\n\nIntroducing Capsule Space Labs...\n\nWe're testing the encapsulation efficiency of lipid nanoparticles in mRNA vaccines in microgravity. This is CRUCIAL to making humans a multi-planetary species. However, this is a wild frontier.\n\n\"A wild frontier refers to an undeveloped, untamed, or newly explored region lying beyond the edge of settled civilization.\"\n\nWe've spoke with executives at the International Space Station and huge space biotech companies. And I have some good news."},
+{"id":"7494495151277600769","date":"2026-08-15T00:00:00Z","reactions":231,"comments":22,"reposts":1,"impressions":39526,"text":"A couple weeks of travel coming up:\n\n📍 Atlanta — now till August 20 (Research, meeting friends, and moving out of the house)\n📍 San Francisco — August 20-24 (Y-Combinator Fellows Demo Day & meeting cool people)\n📍 Boston — August 25 - Onward (Starting at Harvard University)\n\nAnother highlight of the past week is that I co-hosted the ATL Founders Meetup at Georgia Tech. We had 200 people sign up on Luma and an amazing turnout at the event.\n\nI'll be free for most of my time in SF, so please DM me, would love to meet more tuff people."},
+{"id":"7493798434618019840","date":"2026-08-13T00:00:00Z","reactions":14,"comments":0,"reposts":0,"impressions":3921,"sharedFrom":"Shaik Mohammed Sufyaan","text":"Great to meet everyone!!"},
+{"id":"7492812203289657344","date":"2026-08-11T00:00:00Z","reactions":229,"comments":22,"reposts":0,"impressions":21273,"text":"Very excited to see that I've been mentioned on The Tech (MIT)!\n\nHere is some background:\n\nOn July 11, I gave gave two talks at The American Lung Cancer Screening Initiative's 3rd Annual Lung Cancer Innovation Summit.\n\nThe 1st talk I gave with Sai Thoutham. We talked about The National Billboard Project and our progress towards getting a lung cancer screening billboard on every highway in the United States of America.\n\nWe've made some exponential progress on this since then.\n\nThe 2nd talk was about the #FlightPSAMovement, where I give announcements about lung cancer screening when I go on airplanes."},
+{"id":"7491923408218140673","date":"2026-08-08T00:00:00Z","reactions":213,"comments":62,"reposts":2,"impressions":31360,"text":"What if your area doesn't have a startup community?\n\nYou create it.\n\nThat's exactly what we're doing in Atlanta on August 12th. Obviously, Atlanta has a startup scene but we're broadening the horizons of the scene ykwim.\n\nSo I'm co-hosting an event for Atlanta builders at Georgia Tech with Arhan Barve, Shwejan Uppala, Varun Ahlawat, Anvit Divekar and Shaik Mohammed Sufyaan.\n\nThis event will put you in a room with tuff and high-impact founders. You'll get to pitch to a VC, and there's a lot of compute credits on the line."},
+{"id":"7489835635915059200","date":"2026-08-03T00:00:00Z","reactions":239,"comments":31,"reposts":1,"impressions":37367,"text":"During YC Startup School, I played table tennis with Cory Levy.\n\nHonestly, I think the event that he organized called \"Rising Frosh\" was probably one of the best YC Startup School events I went to.\n\nI had the chance to talk to Grace Kasten and Cory Levy about what I'm currently doing and building during my time floating between SF, Boston, and Atlanta.\n\nArhan Barve and I also had the chance to talk to Cory about some of the innovations that are happening at Laplace College Consulting (announcements coming soon!)."},
+{"id":"7489448790492401664","date":"2026-08-01T12:00:00Z","reactions":178,"comments":12,"reposts":1,"impressions":28137,"text":"I want to take a second to shout out Bettina Lee, a fellow lung cancer advocate from ALCSI who I’ve had the opportunity of mentoring.\n\nWe recently reconnected at YC Startup School, and she updated me some things she’s been doing since we first talked a year ago:\n\n- She joined me on the #FlightPSAMovement by giving FIVE announcements about lung cancer screening on an airplane (📷). This genuinely astonishes me still.\n\n- She even published her own book about smoking cessation called The Cloud That Carried No Rain (link in comments)."},
+{"id":"7489406032138641408","date":"2026-08-01T00:00:00Z","reactions":5,"comments":0,"reposts":0,"impressions":1324,"sharedFrom":"Anvit Divekar","text":"high impact initiative"},
+{"id":"7488662632325869569","date":"2026-07-30T00:00:00Z","reactions":592,"comments":66,"reposts":0,"impressions":37509,"text":"I haven't posted in 2 weeks because everything in my life is a question at the moment.\n\nNot everyone posts the hard parts, so here we go:\n\nI'm in Houston, Texas right now, and we just finished competing at the Genes in Space finals (the winner gets their biotech experiment sent to space). Although the result isn't something we hoped for, we *might* have a big update coming soon.\n\nRight now, I'm in the Houston airport and I'm flying back to SF in 6 hours.\n\nI'm not sure where I'm going to stay tonight. A lot of my stuff is stuck in multiple houses in SF due to house hopping during startup school last weekend."},
+{"id":"7485879616172216320","date":"2026-07-23T00:00:00Z","reactions":36,"comments":1,"reposts":0,"impressions":5129,"sharedFrom":"Bryan Johnson","text":"Everyday is Kindness Day."},
+{"id":"7483729824922955776","date":"2026-07-17T00:00:00Z","reactions":17,"comments":2,"reposts":0,"impressions":11041,"text":"What is your main source of information?","poll":{"votes":410,"options":[["Instagram",32],["LinkedIn",27],["Research Articles",20],["TV News / News Articles",21]]}},
+{"id":"7481437912597680144","date":"2026-07-10T00:00:00Z","reactions":367,"comments":19,"reposts":0,"impressions":47454,"text":"It's been a week since I posted, so here's an update:\n\nI went to the 8th NRIVA Global Convention in Springfield, MA last weekend with my family.\n\nI was honored to receive the NRIVA Youth Excellence award from Aishwarya Rajesh (a very famous Indian actress). I'm crazy about Indian cinema, so this was huge for me lol.\n\nOn July 11, I'll be giving two talks at The American Lung Cancer Screening Initiative's 3rd Annual Lung Cancer Innovation Summit."},
+{"id":"7480864828031492098","date":"2026-07-09T00:00:00Z","reactions":22,"comments":2,"reposts":2,"impressions":3580,"sharedFrom":"Wyatt Johnson","text":"It's insane how collaborations for just short periods of time can turn into a BOOK! Congrats on the launch, Wyatt Johnson and Pranav Ayyappan!!!"}
+]}
+</script>
+<script>
+(function(){
+  var D=JSON.parse(document.getElementById('data').textContent),posts=D.posts;
+  // LinkedIn activity ids encode their own timestamp (top bits = ms since epoch); use it for exact dates.
+  posts.forEach(function(p){try{p.t=Number(BigInt(p.id)>>22n)}catch(e){p.t=Date.parse(p.date)}});
+  var fmtN=function(n){return n>=1e4?(n/1e3).toFixed(n>=1e5?0:1).replace(/\.0$/,'')+'K':n.toLocaleString('en-US')};
+  var fmtD=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric'});
+  var sum=function(k){return posts.reduce(function(a,p){return a+p[k]},0)};
+  var imp=sum('impressions'),eng=sum('reactions')+sum('comments')+sum('reposts');
+  document.getElementById('totals').innerHTML=[
+    [fmtN(imp),'impressions'],[fmtN(sum('reactions')),'reactions'],[fmtN(sum('comments')),'comments'],[(eng/imp*100).toFixed(1)+'%','engagement rate']
+  ].map(function(x){return '<div class="tot"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join('');
+  document.getElementById('count').textContent=posts.length+' posts';
+  document.getElementById('asof').textContent=fmtD.format(new Date(D.asOf+'T12:00:00Z'));
+  var best=posts.slice().sort(function(a,b){return b.impressions-a.impressions})[0].id;
+  var esc=function(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  function card(p){
+    var url='https://www.linkedin.com/feed/update/urn:li:activity:'+p.id+'/',long=p.text.length>280;
+    var h='<article class="post"><div class="meta"><span>'+fmtD.format(new Date(p.t))+(p.id===best?'<span class="top">Most seen</span>':'')+'</span>'
+      +'<a href="'+url+'" target="_blank" rel="noopener">Read on LinkedIn ↗</a></div>';
+    if(p.sharedFrom)h+='<div class="shared">Shared '+esc(p.sharedFrom)+'’s post</div>';
+    h+='<div class="text'+(long?' clip':'')+'">'+esc(p.text)+'</div>';
+    if(long)h+='<button type="button" class="more">Show more</button>';
+    if(p.poll){h+='<div class="poll">'+p.poll.options.map(function(o){return '<div class="opt"><i style="width:'+o[1]+'%"></i><span>'+esc(o[0])+'</span><span>'+o[1]+'%</span></div>'}).join('')
+      +'</div><div class="shared">'+p.poll.votes+' votes</div>'}
+    h+='<div class="stats"><span><b>'+p.impressions.toLocaleString('en-US')+'</b> impressions</span><span><b>'+p.reactions.toLocaleString('en-US')+'</b> reactions</span>'
+      +'<span><b>'+p.comments+'</b> comments</span><span><b>'+p.reposts+'</b> reposts</span></div></article>';
+    return h;
+  }
+  var list=document.getElementById('list');
+  function render(by){
+    var s=posts.slice().sort(by==='imp'?function(a,b){return b.impressions-a.impressions}:by==='eng'?function(a,b){return (b.reactions+b.comments+b.reposts)-(a.reactions+a.comments+a.reposts)}:function(a,b){return b.t-a.t});
+    list.innerHTML=s.map(card).join('');
+  }
+  list.addEventListener('click',function(e){
+    var b=e.target.closest('.more');if(!b)return;var t=b.previousElementSibling;
+    var open=t.classList.toggle('clip');b.textContent=open?'Show more':'Show less';
+  });
+  var btns=[].slice.call(document.querySelectorAll('.sort button'));
+  btns.forEach(function(b){b.onclick=function(){btns.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});render(b.dataset.sort)}});
+  render('new');
+})();
+</script>
+</body>
+</html>

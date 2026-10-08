@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Essays &amp; LinkedIn Archive · Soneesh</title>
-<meta name="description" content="18 months of Soneesh's LinkedIn posts, with reactions, comments, reposts, and impressions.">
+<meta name="description" content="All of Soneesh's LinkedIn posts, with reactions, comments, reposts, and impressions.">
 <link rel="canonical" href="https://soneeshk.com/archive">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +59,7 @@ footer a{color:var(--out);text-decoration:none}
 <main>
   <a class="back" href="/">&larr; Soneesh</a>
   <h1>Essays &amp; LinkedIn Archive</h1>
-  <p class="lede">Everything I've posted on LinkedIn in the last 18 months, with the numbers.</p>
+  <p class="lede">Everything I've posted on LinkedIn, with the numbers.</p>
   <div class="totals" id="totals"></div>
   <div class="bar">
     <h2 id="count">Posts</h2>
@@ -92,7 +92,7 @@ footer a{color:var(--out);text-decoration:none}
       +'<div class="text'+(long?' clip':'')+'">'+esc(text)+'</div>';
     if(long)h+='<button type="button" class="more">Show more</button>';
     if(poll)h+='<div class="poll">'+poll.options.map(function(o){return '<div class="opt"><i style="width:'+o[1]+'%"></i><span>'+esc(o[0])+'</span><span>'+o[1]+'%</span></div>'}).join('')+'</div><div class="shared">'+poll.votes+' votes</div>';
-    return h+'<div class="stats"><span><b>'+p.impressions.toLocaleString('en-US')+'</b> impressions</span><span><b>'+p.reactions.toLocaleString('en-US')+'</b> reactions</span>'
+    return h+'<div class="stats"><span><b>'+(p.impressions?p.impressions.toLocaleString('en-US'):'—')+'</b> impressions</span><span><b>'+p.reactions.toLocaleString('en-US')+'</b> reactions</span>'
       +'<span><b>'+p.comments.toLocaleString('en-US')+'</b> comments</span><span><b>'+p.reposts+'</b> reposts</span></div></article>';
   }
   function sorted(){

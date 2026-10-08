@@ -125,8 +125,6 @@ dialog[open]{animation:up .3s cubic-bezier(.2,.9,.3,1)}
 dialog h2{font-weight:500;font-size:22px;margin-top:12px}
 dialog .say{font-size:14px}
 dialog p{font-size:14px;color:var(--muted);margin-top:8px}
-dialog .mov{display:inline-block;margin:14px 3px 0;font-size:14px;color:var(--out);text-decoration:none;padding:6px 12px;border-radius:999px;background:var(--in)}
-dialog .mov:hover{filter:brightness(.96)}
 .acts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:20px}
 .acts a,.acts button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-radius:14px;
   background:var(--in);font-size:11px;color:var(--fg);transition:filter .15s}
@@ -173,8 +171,9 @@ dialog .mov:hover{filter:brightness(.96)}
 .meta.err{color:var(--err)}
 .meta button{all:unset;cursor:pointer;text-decoration:underline}
 
-#ctas{align-self:flex-start;display:flex;align-items:center;gap:6px;margin-top:8px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+#ctas{align-self:flex-start;display:flex;flex-wrap:wrap;align-items:center;gap:0 6px;margin-top:8px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
 #ctas.on{opacity:1;visibility:visible}
+#ctas .br{flex-basis:100%;height:0}
 #ctas i{width:3px;height:3px;border-radius:50%;background:var(--muted);opacity:.6}
 a.cta{text-decoration:none;display:inline-flex;align-items:center}
 .cta{font:inherit;font-size:15px;color:var(--out);background:none;border:0;cursor:pointer;padding:10px 2px;min-height:44px}
@@ -262,7 +261,7 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <div class="focus" id="focus" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Soneesh has notifications silenced</div>
   <div class="hint" id="hint">Tap a message to react</div>
   <div id="log" style="display:contents"></div>
-  <div id="ctas"><button class="cta" id="reply" type="button">Text back</button><i></i><button class="cta" id="bookBtn" type="button">Book a time</button><i></i><a class="cta" href="/donate">Donate</a></div>
+  <div id="ctas"><button class="cta" id="reply" type="button">Text back</button><i></i><button class="cta" id="bookBtn" type="button">Book a time</button><i></i><a class="cta" href="/donate">Donate</a><b class="br"></b><a class="cta" href="/movies">Favorite movies</a><i></i><a class="cta" href="/archive">Essays &amp; LinkedIn archive</a></div>
   <section class="bk" id="bk" aria-label="Book a time">
     <div class="bk-h"><span><b>Book a time</b> &nbsp;10 min</span><button type="button" id="bkClose" aria-label="Close booking">Close</button></div>
     <div class="bk-msg" id="bkMsg">Checking Soneesh's calendar<span class="ld"><i></i><i></i><i></i></span></div>
@@ -297,9 +296,6 @@ textarea::placeholder,input::placeholder{color:var(--muted)}
   <h2>Soneesh Kothagundla</h2>
   <div class="say">(so niche)</div>
   <p>In the relentless pursuit of saving lives.</p>
-  <a class="mov" href="/movies">Favorite movies <span aria-hidden="true">&rsaquo;</span></a>
-  <a class="mov" href="/donate">Support my work <span aria-hidden="true">&rsaquo;</span></a>
-  <a class="mov" href="/archive">Essays &amp; LinkedIn archive <span aria-hidden="true">&rsaquo;</span></a>
   <div class="acts">
     <button type="button" id="cardText"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.6 1.4 4.9 3.6 6.5-.2 1.4-.9 2.7-1.9 3.6 2.1 0 4-.8 5.3-1.9 1 .2 2 .3 3 .3 5.5 0 10-3.8 10-8.5S17.5 3 12 3z"/></svg>text</button>
     <a href="https://www.linkedin.com/in/soneeshk" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.79-1.7-2.79-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>linkedin</a>
